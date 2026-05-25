@@ -247,9 +247,9 @@ html,body{height:100%;font-family:'Jost',sans-serif;background:var(--cream);colo
 <div class="app">
 
 <div class="header no-print">
-  <div class="logo">Fiah <em>Corner</em></div>
+  <div class="logo" onclick="showPage('menu')" style="cursor:pointer;">Fiah <em>Corner</em></div>
   <div class="header-right">
-    <div class="admin-badge" id="adminBadge">⚙ Admin <button onclick="logout()" style="background:none;border:none;cursor:pointer;font-size:11px;color:var(--text-soft);padding:0;">Logout</button></div>
+    <div class="admin-badge" id="adminBadge">⚙ Admin</div>
     <button class="admin-btn" onclick="goAdmin()">⚙ Admin</button>
     <button class="cart-pill" onclick="showPage('order')">
       🛒 <span class="cart-text">Keranjang</span>
@@ -409,6 +409,30 @@ html,body{height:100%;font-family:'Jost',sans-serif;background:var(--cream);colo
         <div class="settings-ctrl"><input class="form-input" id="setService" type="number" min="0" max="20" style="width:80px;"><button class="btn btn-sm btn-primary" onclick="saveSetting('serviceCharge',+document.getElementById('setService').value)">Simpan</button></div>
       </div>
     </div>
+  <div class="admin-section">
+    <div class="panel">
+      <div class="panel-title">Pengaturan Akun</div>
+      <div class="settings-row">
+        <div class="settings-info">
+          <div class="settings-name" id="acctName">—</div>
+          <div class="settings-desc" id="acctEmail">—</div>
+        </div>
+        <div class="settings-ctrl">
+          <span id="acctRole" style="font-size:12px;padding:3px 10px;border-radius:12px;background:var(--rose-pale);color:var(--rose-deep);font-weight:600;"></span>
+        </div>
+      </div>
+      <div class="settings-row" style="border-bottom:none;">
+        <div class="settings-info">
+          <div class="settings-name">Logout</div>
+          <div class="settings-desc">Keluar dari sesi admin</div>
+        </div>
+        <div class="settings-ctrl">
+          <button class="btn btn-sm btn-danger" onclick="confirmLogout()">Logout</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   </div>
 </div>
 
@@ -474,12 +498,30 @@ html,body{height:100%;font-family:'Jost',sans-serif;background:var(--cream);colo
   </div>
 </div>
 
+<!-- LOGOUT CONFIRM MODAL -->
+<div class="modal-bg" id="logoutModal">
+  <div class="modal" style="max-width:360px;">
+    <div class="modal-header">
+      <div class="modal-title">Konfirmasi Logout</div>
+      <button class="modal-close" onclick="closeLogoutModal()">✕</button>
+    </div>
+    <div class="modal-body" style="padding-bottom:8px;">
+      <p style="font-size:14px;color:var(--text-mid);line-height:1.6;">Kamu akan keluar dari sesi admin. Pastikan semua perubahan sudah disimpan.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeLogoutModal()">Batal</button>
+      <button class="btn btn-danger" onclick="doLogout()">Ya, Logout</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script>
 // ===== CONFIG =====
 const API = window.location.origin + '/api';
 let authToken = localStorage.getItem('fc_admin_token') || null;
+let adminInfo = JSON.parse(localStorage.getItem('fc_admin_info') || 'null');
 
 // ===== STATE =====
 let settings = {
@@ -614,6 +656,7 @@ function showPage(name) {
     loadMenu().then(() => renderAdmin());
     loadStats();
     applySettingsToDOM();
+    renderAccountInfo();
   }
 }
 
@@ -661,7 +704,9 @@ async function doLogin() {
       return;
     }
     authToken = res.data.token;
+    adminInfo = res.data.admin || null;
     localStorage.setItem('fc_admin_token', authToken);
+    localStorage.setItem('fc_admin_info', JSON.stringify(adminInfo));
     document.getElementById('loginModal').classList.remove('open');
     document.getElementById('loginUser').value = '';
     document.getElementById('loginPass').value = '';
@@ -681,9 +726,18 @@ function closeLoginModal() {
   document.getElementById('loginError').style.display = 'none';
 }
 
-function logout() {
+function confirmLogout() {
+  document.getElementById('logoutModal').classList.add('open');
+}
+function closeLogoutModal() {
+  document.getElementById('logoutModal').classList.remove('open');
+}
+function doLogout() {
   authToken = null;
+  adminInfo = null;
   localStorage.removeItem('fc_admin_token');
+  localStorage.removeItem('fc_admin_info');
+  closeLogoutModal();
   updateAdminUI();
   showPage('menu');
   toast('Logout berhasil');
@@ -1073,6 +1127,16 @@ async function saveEdit() {
     closeEditModal(); renderAdmin();
     toast(`✓ ${res.data.name} diperbarui!`);
   } else toast('Gagal: ' + (res.message||'Error'));
+}
+
+// ===== ACCOUNT =====
+function renderAccountInfo() {
+  const info = adminInfo;
+  document.getElementById('acctName').textContent = info?.username || 'Admin';
+  document.getElementById('acctEmail').textContent = info?.email || '—';
+  const roleEl = document.getElementById('acctRole');
+  const roleMap = { superadmin: 'Super Admin', admin: 'Admin', kasir: 'Kasir' };
+  roleEl.textContent = roleMap[info?.role] || info?.role || '—';
 }
 
 // ===== SETTINGS =====
