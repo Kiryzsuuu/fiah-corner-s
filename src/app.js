@@ -29,7 +29,7 @@ const allowedOrigins = (process.env.ALLOWED_ORIGINS || '')
 app.use(
   cors({
     origin:
-      process.env.NODE_ENV === 'production'
+      process.env.NODE_ENV === 'production' || process.env.VERCEL
         ? true
         : (origin, cb) => {
             if (!origin || allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
