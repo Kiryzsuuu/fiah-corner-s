@@ -1,4 +1,9 @@
 const mongoose = require('mongoose');
+const dns = require('dns');
+
+// Windows default DNS resolver sometimes doesn't support SRV records required
+// by MongoDB Atlas. Force Google/Cloudflare DNS for reliable SRV lookups.
+dns.setServers(['8.8.8.8', '1.1.1.1', '8.8.4.4']);
 
 let cached = global.__mongooseCache;
 if (!cached) {
