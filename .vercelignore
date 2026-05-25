@@ -1,0 +1,6 @@
+scripts/
+.env
+.env.*
+nodemon.json
+*.log
+README.md

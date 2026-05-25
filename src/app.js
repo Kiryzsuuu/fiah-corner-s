@@ -13,9 +13,14 @@ const { errorHandler, notFound } = require('./middleware/errorHandler');
 
 const app = express();
 
+// Vercel dan reverse proxy lainnya — baca IP asli dari X-Forwarded-For
+app.set('trust proxy', 1);
+
 // ─── Security ────────────────────────────────────────────────────────────────
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 
+// CORS: di production (Vercel) izinkan semua origin — JWT yang menjadi penjaga.
+// Di development pakai whitelist dari ALLOWED_ORIGINS.
 const allowedOrigins = (process.env.ALLOWED_ORIGINS || '')
   .split(',')
   .map((o) => o.trim())
@@ -23,12 +28,15 @@ const allowedOrigins = (process.env.ALLOWED_ORIGINS || '')
 
 app.use(
   cors({
-    origin: (origin, cb) => {
-      if (!origin || allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
-        return cb(null, true);
-      }
-      cb(new Error(`CORS: Origin "${origin}" tidak diizinkan`));
-    },
+    origin:
+      process.env.NODE_ENV === 'production'
+        ? true
+        : (origin, cb) => {
+            if (!origin || allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
+              return cb(null, true);
+            }
+            cb(new Error(`CORS: Origin "${origin}" tidak diizinkan`));
+          },
     credentials: true,
   })
 );
@@ -39,12 +47,16 @@ const limiter = rateLimit({
   max: 200,
   standardHeaders: true,
   legacyHeaders: false,
+  keyGenerator: (req) =>
+    (req.headers['x-forwarded-for'] || '').split(',')[0].trim() || req.ip,
   message: { success: false, message: 'Terlalu banyak request, coba lagi nanti' },
 });
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 10,
+  keyGenerator: (req) =>
+    (req.headers['x-forwarded-for'] || '').split(',')[0].trim() || req.ip,
   message: { success: false, message: 'Terlalu banyak percobaan login' },
 });
 
@@ -60,7 +72,7 @@ if (process.env.NODE_ENV !== 'production') {
   app.use(morgan('dev'));
 }
 
-// ─── DB Connect Middleware (Vercel-compatible) ────────────────────────────────
+// ─── DB Connect Middleware (Vercel-compatible, cached connection) ─────────────
 app.use(async (req, res, next) => {
   try {
     await connectDB();

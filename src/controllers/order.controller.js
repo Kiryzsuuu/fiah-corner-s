@@ -34,8 +34,8 @@ exports.create = async (req, res) => {
     total,
   });
 
-  // Send notifications in background — don't block response
-  setImmediate(async () => {
+  // Send notifications — fire-and-forget (safe for serverless)
+  (async () => {
     const notifConfig = settings.notifications || {};
 
     if (notifConfig.whatsappEnabled) {
@@ -61,7 +61,7 @@ exports.create = async (req, res) => {
         console.error('[Mail] Notification error:', err.message);
       }
     }
-  });
+  })().catch((err) => console.error('[Notify]', err.message));
 
   created(res, 'Pesanan berhasil dibuat', order);
 };
@@ -108,8 +108,8 @@ exports.updateStatus = async (req, res) => {
   order.status = status;
   await order.save();
 
-  // Notify customer on status change
-  setImmediate(async () => {
+  // Notify customer on status change — fire-and-forget (safe for serverless)
+  (async () => {
     const settings = await getSettings();
     if (settings?.notifications?.whatsappEnabled && order.customerContact?.phone) {
       try {
@@ -118,7 +118,7 @@ exports.updateStatus = async (req, res) => {
         console.error('[WA] Status update error:', err.message);
       }
     }
-  });
+  })().catch((err) => console.error('[Notify]', err.message));
 
   ok(res, `Status pesanan diperbarui ke "${status}"`, order);
 };
