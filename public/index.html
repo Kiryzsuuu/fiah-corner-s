@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fiah Corner — Elegant Café</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --rose:#c9748f;
+  --rose-light:#e8b4c3;
+  --rose-pale:#fdf0f3;
+  --rose-deep:#9e4f6a;
+  --gold:#c9a96e;
+  --gold-light:#e8d5b0;
+  --cream:#faf7f4;
+  --cream2:#f5ede6;
+  --white:#ffffff;
+  --text:#2c1810;
+  --text-mid:#6b4c3b;
+  --text-soft:#a07c6e;
+  --border:#e8d5c8;
+  --shadow:0 2px 20px rgba(180,100,120,0.10);
+  --shadow-lg:0 8px 40px rgba(180,100,120,0.18);
+  --radius:14px;
+  --radius-sm:8px;
+}
+html,body{height:100%;font-family:'Jost',sans-serif;background:var(--cream);color:var(--text);}
+.app{display:flex;flex-direction:column;height:100vh;overflow:hidden;}
+.header{background:var(--white);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:64px;flex-shrink:0;position:relative;}
+.header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--rose),var(--gold),var(--rose));}
+.logo{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;color:var(--rose-deep);letter-spacing:1.5px;}
+.logo em{font-style:italic;color:var(--gold);font-weight:300;}
+.header-right{display:flex;align-items:center;gap:12px;}
+.admin-btn{padding:8px 16px;background:transparent;border:1px solid var(--rose-light);border-radius:20px;color:var(--rose-deep);font-family:'Jost',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px;}
+.admin-btn:hover{background:var(--rose-pale);border-color:var(--rose);}
+.cart-pill{display:flex;align-items:center;gap:8px;background:var(--rose);color:white;padding:8px 16px;border-radius:20px;cursor:pointer;font-size:13px;font-weight:500;transition:all .25s;border:none;}
+.cart-pill:hover{background:var(--rose-deep);transform:translateY(-1px);box-shadow:0 4px 16px rgba(180,80,110,0.3);}
+.cart-count{background:var(--gold);color:var(--text);width:20px;height:20px;border-radius:50%;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;}
+.nav{display:flex;background:var(--white);border-bottom:1px solid var(--border);padding:0 24px;gap:0;flex-shrink:0;}
+.nav-item{padding:14px 20px;border:none;background:transparent;font-family:'Jost',sans-serif;font-size:13px;font-weight:500;color:var(--text-soft);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;letter-spacing:.5px;white-space:nowrap;}
+.nav-item.active{color:var(--rose-deep);border-bottom-color:var(--rose);}
+.nav-item:hover:not(.active){color:var(--text-mid);}
+.main{flex:1;overflow:hidden;display:flex;}
+.page{flex:1;overflow-y:auto;padding:28px 24px;display:none;}
+.page.active{display:block;}
+.sec-head{display:flex;align-items:baseline;gap:12px;margin-bottom:24px;}
+.sec-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600;color:var(--text);}
+.sec-sub{font-size:13px;color:var(--text-soft);letter-spacing:.5px;}
+.sec-action{margin-left:auto;}
+.cat-strip{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap;}
+.cat-tab{padding:7px 18px;border:1px solid var(--border);border-radius:20px;background:var(--white);color:var(--text-mid);font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;font-family:'Jost',sans-serif;}
+.cat-tab.active,.cat-tab:hover{background:var(--rose);color:white;border-color:var(--rose);}
+.menu-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:20px;}
+.menu-card{background:var(--white);border-radius:var(--radius);border:1px solid var(--border);overflow:hidden;transition:all .3s cubic-bezier(.34,1.56,.64,1);cursor:pointer;position:relative;}
+.menu-card:hover{transform:translateY(-6px);box-shadow:var(--shadow-lg);border-color:var(--rose-light);}
+.card-img{width:100%;height:150px;background:var(--cream2);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+.card-img img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;}
+.card-img-placeholder{font-size:48px;}
+.card-body{padding:14px 16px;}
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;}
+.card-name{font-weight:600;font-size:14px;color:var(--text);line-height:1.3;}
+.card-cat{font-size:10px;color:var(--rose);background:var(--rose-pale);padding:2px 8px;border-radius:10px;font-weight:500;letter-spacing:.3px;white-space:nowrap;}
+.card-desc{font-size:12px;color:var(--text-soft);margin-bottom:12px;line-height:1.5;}
+.card-footer{display:flex;align-items:center;justify-content:space-between;}
+.card-price{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:var(--rose-deep);}
+.add-card-btn{width:32px;height:32px;border-radius:50%;background:var(--rose);border:none;color:white;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .25s;flex-shrink:0;}
+.add-card-btn:hover{background:var(--rose-deep);transform:scale(1.15);}
+.unavail-badge{position:absolute;top:10px;left:10px;background:rgba(0,0,0,0.55);color:white;font-size:11px;padding:3px 10px;border-radius:10px;backdrop-filter:blur(4px);}
+.empty-state{text-align:center;padding:60px 20px;color:var(--text-soft);}
+.empty-icon{font-size:56px;margin-bottom:16px;opacity:.5;}
+.empty-text{font-size:16px;margin-bottom:8px;font-weight:500;}
+.empty-sub{font-size:13px;}
+.btn{padding:10px 22px;border-radius:var(--radius-sm);font-family:'Jost',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:all .2s;border:none;display:inline-flex;align-items:center;gap:8px;}
+.btn:disabled{opacity:.6;cursor:not-allowed;transform:none!important;}
+.btn-primary{background:var(--rose);color:white;}
+.btn-primary:hover:not(:disabled){background:var(--rose-deep);transform:translateY(-1px);box-shadow:0 4px 16px rgba(180,80,110,.3);}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--text-mid);}
+.btn-outline:hover:not(:disabled){border-color:var(--rose);color:var(--rose);}
+.btn-gold{background:var(--gold);color:var(--text);}
+.btn-gold:hover:not(:disabled){background:#b8924a;transform:translateY(-1px);}
+.btn-danger{background:#f44336;color:white;}
+.btn-danger:hover:not(:disabled){background:#c62828;}
+.btn-sm{padding:7px 14px;font-size:13px;}
+.btn-lg{padding:14px 32px;font-size:15px;border-radius:var(--radius);letter-spacing:.5px;}
+.btn-block{width:100%;justify-content:center;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+.form-row.single{grid-template-columns:1fr;}
+.form-group{display:flex;flex-direction:column;gap:6px;}
+.form-label{font-size:12px;font-weight:600;color:var(--text-mid);letter-spacing:.5px;text-transform:uppercase;}
+.form-input,.form-select,.form-textarea{padding:11px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:'Jost',sans-serif;font-size:14px;color:var(--text);background:var(--white);outline:none;transition:border-color .2s,box-shadow .2s;appearance:none;}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--rose);box-shadow:0 0 0 3px rgba(201,116,143,.12);}
+.form-textarea{resize:none;height:80px;line-height:1.5;}
+.form-hint{font-size:11px;color:var(--text-soft);}
+.panel{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:20px 24px;margin-bottom:16px;}
+.panel-title{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:var(--text);margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border);}
+.order-layout{display:grid;grid-template-columns:1fr 360px;gap:24px;max-width:1000px;}
+.order-item{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--border);}
+.order-item:last-child{border-bottom:none;}
+.oi-thumb{width:52px;height:52px;border-radius:10px;background:var(--cream2);display:flex;align-items:center;justify-content:center;font-size:28px;overflow:hidden;flex-shrink:0;}
+.oi-thumb img{width:100%;height:100%;object-fit:cover;}
+.oi-info{flex:1;}
+.oi-name{font-weight:600;font-size:14px;color:var(--text);}
+.oi-price{font-size:13px;color:var(--text-soft);}
+.oi-qty{display:flex;align-items:center;gap:10px;background:var(--cream2);border-radius:20px;padding:4px 10px;}
+.qty-btn{width:24px;height:24px;border-radius:50%;border:none;background:var(--rose);color:white;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;line-height:1;}
+.qty-btn:hover{background:var(--rose-deep);}
+.qty-num{font-weight:600;font-size:14px;min-width:18px;text-align:center;}
+.oi-subtotal{font-weight:600;font-size:14px;color:var(--rose-deep);text-align:right;min-width:70px;}
+.summary-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.summary-label{font-size:13px;color:var(--text-soft);}
+.summary-val{font-size:13px;font-weight:500;color:var(--text);}
+.summary-total{display:flex;justify-content:space-between;align-items:baseline;padding:14px 0 0;}
+.summary-total-label{font-size:15px;font-weight:600;color:var(--text);}
+.summary-total-val{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;color:var(--rose-deep);}
+.customer-list{display:flex;flex-direction:column;gap:8px;margin-bottom:12px;}
+.customer-row{display:flex;gap:8px;align-items:center;}
+.customer-row .form-input{flex:1;}
+.remove-cust{width:32px;height:32px;border:1px solid var(--border);border-radius:50%;background:transparent;color:var(--text-soft);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all .2s;flex-shrink:0;}
+.remove-cust:hover{background:#fde8e8;border-color:#f44336;color:#f44336;}
+.receipt-wrap{display:flex;justify-content:center;padding:20px 0;}
+.receipt{width:360px;background:white;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-lg);}
+.receipt-header{background:linear-gradient(135deg,var(--rose-deep),var(--rose));color:white;padding:24px;text-align:center;}
+.receipt-logo{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600;letter-spacing:2px;}
+.receipt-logo em{font-style:italic;color:var(--gold-light);}
+.receipt-tagline{font-size:11px;letter-spacing:3px;opacity:.8;margin-top:4px;text-transform:uppercase;}
+.receipt-body{padding:20px;}
+.receipt-divider{border:none;border-top:1px dashed var(--border);margin:14px 0;}
+.receipt-row{display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;}
+.receipt-row.total{font-size:16px;font-weight:700;color:var(--rose-deep);border-top:2px solid var(--rose-light);padding-top:10px;margin-top:4px;}
+.receipt-customers{margin:10px 0;}
+.receipt-cust-title{font-size:11px;font-weight:600;color:var(--text-soft);letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px;}
+.receipt-cust{font-size:13px;color:var(--text);padding:4px 0;display:flex;align-items:center;gap:6px;}
+.receipt-cust::before{content:'✦';font-size:9px;color:var(--rose);}
+.receipt-footer{background:var(--cream2);padding:16px;text-align:center;font-size:12px;color:var(--text-soft);line-height:1.7;}
+.receipt-footer strong{color:var(--rose-deep);font-family:'Cormorant Garamond',serif;font-size:14px;}
+.receipt-actions{display:flex;gap:12px;margin-top:20px;justify-content:center;}
+.admin-section{margin-bottom:32px;}
+.admin-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;}
+.admin-menu-item{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:16px;display:flex;align-items:center;gap:14px;transition:all .2s;}
+.admin-menu-item:hover{border-color:var(--rose-light);box-shadow:var(--shadow);}
+.ami-thumb{width:56px;height:56px;border-radius:10px;background:var(--cream2);display:flex;align-items:center;justify-content:center;font-size:30px;overflow:hidden;flex-shrink:0;}
+.ami-thumb img{width:100%;height:100%;object-fit:cover;}
+.ami-info{flex:1;}
+.ami-name{font-weight:600;font-size:14px;color:var(--text);margin-bottom:2px;}
+.ami-cat{font-size:11px;color:var(--text-soft);}
+.ami-price-edit{display:flex;align-items:center;gap:6px;margin-top:6px;}
+.price-input{width:110px;padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;color:var(--text);font-family:'Jost',sans-serif;}
+.price-input:focus{border-color:var(--rose);outline:none;}
+.ami-actions{display:flex;gap:6px;flex-shrink:0;}
+.toggle-avail{padding:5px 12px;border-radius:14px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid;font-family:'Jost',sans-serif;transition:all .2s;}
+.toggle-avail.on{background:#e8f5e9;color:#2e7d32;border-color:#a5d6a7;}
+.toggle-avail.off{background:#fce4ec;color:#c62828;border-color:#f48fb1;}
+.add-menu-form{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:24px;}
+.img-upload-area{border:2px dashed var(--border);border-radius:var(--radius-sm);padding:24px;text-align:center;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;}
+.img-upload-area:hover{border-color:var(--rose);background:var(--rose-pale);}
+.img-upload-area.has-img{border-style:solid;border-color:var(--rose-light);}
+.img-preview{width:100%;height:160px;object-fit:cover;border-radius:8px;display:none;}
+.upload-placeholder{color:var(--text-soft);font-size:13px;}
+.upload-icon{font-size:36px;margin-bottom:8px;}
+.upload-input{position:absolute;inset:0;opacity:0;cursor:pointer;}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;}
+.stat-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;}
+.stat-label{font-size:12px;color:var(--text-soft);letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px;}
+.stat-val{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;color:var(--text);}
+.stat-sub{font-size:12px;color:var(--rose);margin-top:4px;}
+.settings-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border);}
+.settings-row:last-child{border-bottom:none;}
+.settings-info{display:flex;flex-direction:column;gap:2px;}
+.settings-name{font-size:14px;font-weight:500;color:var(--text);}
+.settings-desc{font-size:12px;color:var(--text-soft);}
+.settings-ctrl{display:flex;align-items:center;gap:10px;}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(44,24,16,.45);z-index:1000;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+.modal-bg.open{display:flex;}
+.modal{background:var(--white);border-radius:var(--radius);width:90%;max-width:480px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,.2);}
+.modal-header{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.modal-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:var(--text);}
+.modal-close{width:32px;height:32px;border:1px solid var(--border);border-radius:50%;background:transparent;cursor:pointer;font-size:18px;color:var(--text-soft);display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.modal-close:hover{background:var(--cream2);color:var(--text);}
+.modal-body{padding:24px;}
+.modal-footer{padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end;}
+/* Login modal specifics */
+.login-error{color:#c62828;font-size:12px;margin-top:8px;padding:8px 12px;background:#fce4ec;border-radius:6px;display:none;}
+.admin-badge{display:none;align-items:center;gap:8px;padding:6px 14px;background:var(--rose-pale);border:1px solid var(--rose-light);border-radius:20px;font-size:12px;color:var(--rose-deep);}
+.admin-badge.show{display:flex;}
+#toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--text);color:white;padding:12px 24px;border-radius:24px;font-size:13px;font-weight:500;opacity:0;transition:all .3s;pointer-events:none;z-index:9999;white-space:nowrap;}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+@media(max-width:768px){.order-layout{grid-template-columns:1fr;}.stat-grid{grid-template-columns:repeat(2,1fr);}.form-row{grid-template-columns:1fr;}.receipt{width:100%;}}
+@media print{.no-print{display:none!important;}body{background:white;}.receipt{box-shadow:none;border:1px solid #ddd;}}
+</style>
+</head>
+<body>
+<div class="app">
+
+<div class="header no-print">
+  <div class="logo">Fiah <em>Corner</em></div>
+  <div class="header-right">
+    <div class="admin-badge" id="adminBadge">⚙ Admin <button onclick="logout()" style="background:none;border:none;cursor:pointer;font-size:11px;color:var(--text-soft);padding:0;">Logout</button></div>
+    <button class="admin-btn" onclick="goAdmin()">⚙ Admin</button>
+    <button class="cart-pill" onclick="showPage('order')">
+      🛒 Keranjang
+      <div class="cart-count" id="cartCount">0</div>
+    </button>
+  </div>
+</div>
+
+<div class="nav no-print">
+  <button class="nav-item active" onclick="showPage('menu')" data-page="menu">Menu</button>
+  <button class="nav-item" onclick="showPage('order')" data-page="order">Pesanan</button>
+  <button class="nav-item" onclick="showPage('receipt')" data-page="receipt">Struk</button>
+</div>
+
+<div class="main">
+
+<!-- MENU PAGE -->
+<div class="page active" id="page-menu">
+  <div class="sec-head">
+    <div class="sec-title">Menu</div>
+    <div class="sec-sub">Pilih hidangan favoritmu</div>
+  </div>
+  <div class="cat-strip" id="catStrip"></div>
+  <div class="menu-grid" id="menuGrid">
+    <div class="empty-state"><div class="empty-icon">☕</div><div class="empty-text">Memuat menu...</div></div>
+  </div>
+</div>
+
+<!-- ORDER PAGE -->
+<div class="page" id="page-order">
+  <div class="sec-head">
+    <div class="sec-title">Pesanan</div>
+    <div class="sec-sub">Kelola & konfirmasi pesanan</div>
+  </div>
+  <div class="order-layout">
+    <div>
+      <div class="panel">
+        <div class="panel-title">Item Pesanan</div>
+        <div id="orderItems"></div>
+      </div>
+    </div>
+    <div>
+      <div class="panel">
+        <div class="panel-title">Atas Nama</div>
+        <div class="customer-list" id="customerList"></div>
+        <button class="btn btn-outline btn-sm" onclick="addCustomer()">+ Tambah Nama</button>
+      </div>
+      <div class="panel">
+        <div class="panel-title">Ringkasan</div>
+        <div id="orderSummary"></div>
+        <div class="form-group" style="margin-top:14px;">
+          <label class="form-label">Nomor Meja</label>
+          <select class="form-select" id="tableNum">
+            <option value="">Pilih meja...</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-top:10px;">
+          <label class="form-label">Metode Bayar</label>
+          <select class="form-select" id="payMethod"></select>
+        </div>
+        <div class="form-group" style="margin-top:10px;">
+          <label class="form-label">Catatan</label>
+          <textarea class="form-textarea" id="orderNote" placeholder="e.g. less sweet, tanpa es..."></textarea>
+        </div>
+        <button id="confirmBtn" class="btn btn-primary btn-block btn-lg" style="margin-top:16px;" onclick="submitOrder()">Konfirmasi Pesanan</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RECEIPT PAGE -->
+<div class="page" id="page-receipt">
+  <div class="sec-head">
+    <div class="sec-title">Struk Pembayaran</div>
+    <div class="sec-sub">Rincian transaksi</div>
+  </div>
+  <div id="receiptContent">
+    <div class="empty-state"><div class="empty-icon">🧾</div><div class="empty-text">Belum ada struk</div><div class="empty-sub">Selesaikan pesanan untuk melihat struk</div></div>
+  </div>
+</div>
+
+<!-- ADMIN PAGE -->
+<div class="page" id="page-admin">
+  <div class="sec-head">
+    <div class="sec-title">Admin Dashboard</div>
+    <div class="sec-sub">Kelola menu, harga & pengaturan</div>
+    <div class="sec-action"><button class="btn btn-outline btn-sm" onclick="showPage('menu')">← Kembali</button></div>
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat-card"><div class="stat-label">Total Menu</div><div class="stat-val" id="statMenu">—</div><div class="stat-sub">item aktif</div></div>
+    <div class="stat-card"><div class="stat-label">Pesanan Hari Ini</div><div class="stat-val" id="statOrders">—</div><div class="stat-sub">transaksi</div></div>
+    <div class="stat-card"><div class="stat-label">Pendapatan</div><div class="stat-val" id="statRev">—</div><div class="stat-sub">hari ini</div></div>
+    <div class="stat-card"><div class="stat-label">Kategori</div><div class="stat-val" id="statCat">—</div><div class="stat-sub">kategori</div></div>
+  </div>
+
+  <div class="admin-section">
+    <div class="panel-title" style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;margin-bottom:16px;">Tambah Menu Baru</div>
+    <div class="add-menu-form">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Nama Menu *</label><input class="form-input" id="newName" placeholder="e.g. Matcha Latte"></div>
+        <div class="form-group"><label class="form-label">Kategori *</label><input class="form-input" id="newCat" placeholder="e.g. Minuman, Makanan..."></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Harga (Rp) *</label><input class="form-input" id="newPrice" type="number" placeholder="35000"></div>
+        <div class="form-group"><label class="form-label">Deskripsi</label><input class="form-input" id="newDesc" placeholder="Deskripsi singkat menu"></div>
+      </div>
+      <div class="form-group" style="margin-bottom:14px;">
+        <label class="form-label">Emoji (opsional)</label>
+        <input class="form-input" id="newEmoji" placeholder="e.g. ☕ 🍰 🥤" style="max-width:200px;">
+      </div>
+      <div class="form-group" style="margin-bottom:16px;">
+        <label class="form-label">Foto Menu <span style="font-weight:400;text-transform:none;color:var(--text-soft);">(langsung simpan ke database)</span></label>
+        <div class="img-upload-area" id="uploadArea" onclick="document.getElementById('imgInput').click()">
+          <input type="file" id="imgInput" class="upload-input" accept="image/jpeg,image/png,image/webp" onchange="handleImgUpload(event)">
+          <img id="imgPreview" class="img-preview" alt="">
+          <div class="upload-placeholder" id="uploadPlaceholder">
+            <div class="upload-icon">📸</div>
+            <div>Klik untuk upload foto menu</div>
+            <div style="font-size:11px;margin-top:4px;">JPG, PNG, WEBP (maks 4MB)</div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button id="addMenuBtn" class="btn btn-primary" onclick="addMenuItem()">+ Tambah Menu</button>
+        <button class="btn btn-outline" onclick="clearAddForm()">Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-section">
+    <div class="panel-title" style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;margin-bottom:16px;">Kelola Menu</div>
+    <div class="admin-grid" id="adminMenuList"></div>
+  </div>
+
+  <div class="admin-section">
+    <div class="panel">
+      <div class="panel-title">Pengaturan Kafe</div>
+      <div class="settings-row">
+        <div class="settings-info"><div class="settings-name">Nama Kafe</div><div class="settings-desc">Tampil di header & struk</div></div>
+        <div class="settings-ctrl"><input class="form-input" id="setCafeName" style="width:180px;"><button class="btn btn-sm btn-primary" onclick="saveSetting('cafeName',document.getElementById('setCafeName').value)">Simpan</button></div>
+      </div>
+      <div class="settings-row">
+        <div class="settings-info"><div class="settings-name">Tagline</div><div class="settings-desc">Sub-judul di struk</div></div>
+        <div class="settings-ctrl"><input class="form-input" id="setTagline" style="width:200px;"><button class="btn btn-sm btn-primary" onclick="saveSetting('tagline',document.getElementById('setTagline').value)">Simpan</button></div>
+      </div>
+      <div class="settings-row">
+        <div class="settings-info"><div class="settings-name">Alamat</div><div class="settings-desc">Tampil di struk</div></div>
+        <div class="settings-ctrl"><input class="form-input" id="setAddress" style="width:220px;"><button class="btn btn-sm btn-primary" onclick="saveSetting('address',document.getElementById('setAddress').value)">Simpan</button></div>
+      </div>
+      <div class="settings-row">
+        <div class="settings-info"><div class="settings-name">Pajak (%)</div><div class="settings-desc">Persentase pajak otomatis</div></div>
+        <div class="settings-ctrl"><input class="form-input" id="setTax" type="number" min="0" max="30" style="width:80px;"><button class="btn btn-sm btn-primary" onclick="saveSetting('taxRate',+document.getElementById('setTax').value)">Simpan</button></div>
+      </div>
+      <div class="settings-row">
+        <div class="settings-info"><div class="settings-name">Service Charge (%)</div><div class="settings-desc">Biaya layanan</div></div>
+        <div class="settings-ctrl"><input class="form-input" id="setService" type="number" min="0" max="20" style="width:80px;"><button class="btn btn-sm btn-primary" onclick="saveSetting('serviceCharge',+document.getElementById('setService').value)">Simpan</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+</div>
+
+<!-- EDIT MENU MODAL -->
+<div class="modal-bg" id="editModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Edit Menu</div>
+      <button class="modal-close" onclick="closeEditModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editId">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Nama</label><input class="form-input" id="editName"></div>
+        <div class="form-group"><label class="form-label">Kategori</label><input class="form-input" id="editCatInput"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Harga (Rp)</label><input class="form-input" id="editPrice" type="number"></div>
+        <div class="form-group"><label class="form-label">Emoji</label><input class="form-input" id="editEmoji"></div>
+      </div>
+      <div class="form-group" style="margin-bottom:14px;"><label class="form-label">Deskripsi</label><input class="form-input" id="editDesc"></div>
+      <div class="form-group">
+        <label class="form-label">Ganti Foto</label>
+        <div class="img-upload-area" id="editUploadArea" onclick="document.getElementById('editImgInput').click()">
+          <input type="file" id="editImgInput" class="upload-input" accept="image/jpeg,image/png,image/webp" onchange="handleEditImgUpload(event)">
+          <img id="editImgPreview" class="img-preview" alt="">
+          <div class="upload-placeholder" id="editUploadPlaceholder"><div class="upload-icon">📸</div><div style="font-size:13px;">Klik untuk ganti foto</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeEditModal()">Batal</button>
+      <button id="saveEditBtn" class="btn btn-primary" onclick="saveEdit()">Simpan Perubahan</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN MODAL -->
+<div class="modal-bg" id="loginModal">
+  <div class="modal" style="max-width:360px;">
+    <div class="modal-header">
+      <div class="modal-title">Login Admin</div>
+      <button class="modal-close" onclick="closeLoginModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group" style="margin-bottom:14px;">
+        <label class="form-label">Username</label>
+        <input class="form-input" id="loginUser" placeholder="username" autocomplete="username">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input class="form-input" id="loginPass" type="password" placeholder="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <div class="login-error" id="loginError"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeLoginModal()">Batal</button>
+      <button id="loginBtn" class="btn btn-primary" onclick="doLogin()">Login</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ===== CONFIG =====
+const API = window.location.origin + '/api';
+let authToken = localStorage.getItem('fc_admin_token') || null;
+
+// ===== STATE =====
+let settings = {
+  cafeName:'Fiah Corner', tagline:'Your Sweet Little Café',
+  address:'Jl. Melati No.12, Jakarta', taxRate:0, serviceCharge:0,
+  tables:['Meja 1','Meja 2','Meja 3','Meja 4','Meja 5','Meja 6','Meja 7','Meja 8','Meja 9','Meja 10','Take Away'],
+  paymentMethods:['Cash','QRIS','Transfer Bank','GoPay','OVO','Dana','ShopeePay'],
+};
+let menuItems = [];
+let cart = {};
+let customers = [''];
+let lastOrder = null;
+let activeCat = 'Semua';
+let editingId = null;
+let newImageFile = null;
+let editImageFile = null;
+
+// ===== UTILS =====
+const rp = n => 'Rp ' + Number(n).toLocaleString('id-ID');
+const menuId = m => m._id || m.id;
+const findMenu = id => menuItems.find(m => menuId(m) === id);
+
+function toast(msg, dur = 2200) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), dur);
+}
+
+const getCategories = () => ['Semua', ...new Set(menuItems.map(m => m.category))];
+const cartTotal = () => Object.entries(cart).reduce((s,[id,q]) => {
+  const m = findMenu(id);
+  return s + (m ? m.price * q : 0);
+}, 0);
+const cartCount = () => Object.values(cart).reduce((a,b) => a + b, 0);
+
+// ===== API HELPERS =====
+const authHeader = () => authToken ? { Authorization: `Bearer ${authToken}` } : {};
+
+const apiGet = async path => {
+  const r = await fetch(API + path, { headers: authHeader() });
+  return r.json();
+};
+const apiPost = async (path, data) => {
+  const r = await fetch(API + path, {
+    method:'POST', headers:{ 'Content-Type':'application/json', ...authHeader() },
+    body: JSON.stringify(data),
+  });
+  return r.json();
+};
+const apiPut = async (path, data) => {
+  const r = await fetch(API + path, {
+    method:'PUT', headers:{ 'Content-Type':'application/json', ...authHeader() },
+    body: JSON.stringify(data),
+  });
+  return r.json();
+};
+const apiPatch = async (path, data = {}) => {
+  const r = await fetch(API + path, {
+    method:'PATCH', headers:{ 'Content-Type':'application/json', ...authHeader() },
+    body: JSON.stringify(data),
+  });
+  return r.json();
+};
+const apiDelete = async path => {
+  const r = await fetch(API + path, { method:'DELETE', headers: authHeader() });
+  return r.json();
+};
+const apiUpload = async (path, formData, method = 'POST') => {
+  const r = await fetch(API + path, { method, headers: authHeader(), body: formData });
+  return r.json();
+};
+
+// ===== DATA LOADING =====
+async function loadSettings() {
+  try {
+    const res = await apiGet('/settings');
+    if (!res.success) return;
+    settings = { ...settings, ...res.data };
+    applySettingsToDOM();
+  } catch {}
+}
+
+function applySettingsToDOM() {
+  const parts = (settings.cafeName || 'Fiah Corner').split(' ');
+  document.querySelectorAll('.logo').forEach(el => {
+    el.innerHTML = parts[0] + ' <em>' + parts.slice(1).join(' ') + '</em>';
+  });
+  document.title = (settings.cafeName || 'Fiah Corner') + ' — Elegant Café';
+
+  const tbl = document.getElementById('tableNum');
+  if (tbl && settings.tables) {
+    tbl.innerHTML = '<option value="">Pilih meja...</option>' +
+      settings.tables.map(t => `<option>${t}</option>`).join('');
+  }
+  const pay = document.getElementById('payMethod');
+  if (pay && settings.paymentMethods) {
+    pay.innerHTML = settings.paymentMethods.map(p => `<option>${p}</option>`).join('');
+  }
+  const fields = {
+    setCafeName: settings.cafeName || '',
+    setTagline: settings.tagline || '',
+    setAddress: settings.address || '',
+    setTax: settings.taxRate || 0,
+    setService: settings.serviceCharge || 0,
+  };
+  Object.entries(fields).forEach(([id, val]) => {
+    const el = document.getElementById(id);
+    if (el) el.value = val;
+  });
+}
+
+async function loadMenu() {
+  try {
+    const res = await apiGet('/menu');
+    if (res.success) menuItems = res.data || [];
+  } catch {}
+}
+
+// ===== NAVIGATION =====
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  const navEl = document.querySelector(`[data-page="${name}"]`);
+  if (navEl) navEl.classList.add('active');
+  if (name === 'menu') renderMenu();
+  if (name === 'order') { renderOrderItems(); renderCustomers(); renderSummary(); }
+  if (name === 'receipt' && lastOrder) renderReceiptPage();
+  if (name === 'admin') {
+    loadMenu().then(() => renderAdmin());
+    loadStats();
+    applySettingsToDOM();
+  }
+}
+
+// ===== AUTH =====
+function updateAdminUI() {
+  const badge = document.getElementById('adminBadge');
+  const btn = document.querySelector('.admin-btn');
+  if (authToken) {
+    badge.classList.add('show');
+    if (btn) btn.style.display = 'none';
+  } else {
+    badge.classList.remove('show');
+    if (btn) btn.style.display = '';
+  }
+}
+
+async function goAdmin() {
+  if (!authToken) {
+    document.getElementById('loginModal').classList.add('open');
+    setTimeout(() => document.getElementById('loginUser').focus(), 100);
+    return;
+  }
+  showPage('admin');
+}
+
+async function doLogin() {
+  const username = document.getElementById('loginUser').value.trim();
+  const password = document.getElementById('loginPass').value;
+  const errEl = document.getElementById('loginError');
+  const btn = document.getElementById('loginBtn');
+  errEl.style.display = 'none';
+
+  if (!username || !password) {
+    errEl.textContent = 'Username dan password wajib diisi';
+    errEl.style.display = 'block';
+    return;
+  }
+  btn.disabled = true; btn.textContent = 'Memverifikasi...';
+
+  try {
+    const res = await apiPost('/auth/login', { username, password });
+    if (!res.success) {
+      errEl.textContent = res.message || 'Login gagal';
+      errEl.style.display = 'block';
+      return;
+    }
+    authToken = res.data.token;
+    localStorage.setItem('fc_admin_token', authToken);
+    document.getElementById('loginModal').classList.remove('open');
+    document.getElementById('loginUser').value = '';
+    document.getElementById('loginPass').value = '';
+    updateAdminUI();
+    showPage('admin');
+    toast('✓ Login berhasil');
+  } catch {
+    errEl.textContent = 'Tidak dapat terhubung ke server';
+    errEl.style.display = 'block';
+  } finally {
+    btn.disabled = false; btn.textContent = 'Login';
+  }
+}
+
+function closeLoginModal() {
+  document.getElementById('loginModal').classList.remove('open');
+  document.getElementById('loginError').style.display = 'none';
+}
+
+function logout() {
+  authToken = null;
+  localStorage.removeItem('fc_admin_token');
+  updateAdminUI();
+  showPage('menu');
+  toast('Logout berhasil');
+}
+
+// ===== MENU RENDER =====
+function renderMenu() {
+  const cats = getCategories();
+  const strip = document.getElementById('catStrip');
+  strip.innerHTML = cats.map(c =>
+    `<button class="cat-tab ${c===activeCat?'active':''}" onclick="filterCat('${c}')">${c}</button>`
+  ).join('');
+
+  const filtered = activeCat === 'Semua' ? menuItems : menuItems.filter(m => m.category === activeCat);
+  const grid = document.getElementById('menuGrid');
+  if (filtered.length === 0) {
+    grid.innerHTML = `<div class="empty-state"><div class="empty-icon">🍽</div><div class="empty-text">Belum ada menu</div><div class="empty-sub">Tambahkan menu di Admin Dashboard</div></div>`;
+    return;
+  }
+  grid.innerHTML = filtered.map(m => {
+    const id = menuId(m);
+    const imgEl = m.imageUrl
+      ? `<img src="${m.imageUrl}" alt="${m.name}" loading="lazy" onerror="this.style.display='none';this.nextSibling.style.display='flex'">`
+      : '';
+    const phEl = `<span class="card-img-placeholder" style="${m.imageUrl?'display:none':''}">${m.emoji||'🍽'}</span>`;
+    return `
+    <div class="menu-card" onclick="${m.available?`addToCart('${id}')`:'' }">
+      <div class="card-img">${imgEl}${phEl}${!m.available?'<div class="unavail-badge">Tidak Tersedia</div>':''}</div>
+      <div class="card-body">
+        <div class="card-top"><div class="card-name">${m.name}</div><div class="card-cat">${m.category}</div></div>
+        <div class="card-desc">${m.description||''}</div>
+        <div class="card-footer">
+          <div class="card-price">${rp(m.price)}</div>
+          ${m.available?`<button class="add-card-btn" onclick="event.stopPropagation();addToCart('${id}')">+</button>`:''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterCat(cat) { activeCat = cat; renderMenu(); }
+
+function addToCart(id) {
+  cart[id] = (cart[id]||0) + 1;
+  updateCartBadge();
+  const m = findMenu(id);
+  toast(`${m.emoji||'✓'} ${m.name} ditambahkan`);
+}
+
+function updateCartBadge() {
+  document.getElementById('cartCount').textContent = cartCount();
+}
+
+// ===== ORDER =====
+function renderOrderItems() {
+  const el = document.getElementById('orderItems');
+  const items = Object.entries(cart).filter(([,q]) => q > 0);
+  if (!items.length) {
+    el.innerHTML = `<div class="empty-state"><div class="empty-icon">🛒</div><div class="empty-text">Keranjang kosong</div><div class="empty-sub">Pilih menu terlebih dahulu</div></div>`;
+    return;
+  }
+  el.innerHTML = items.map(([id,qty]) => {
+    const m = findMenu(id);
+    if (!m) return '';
+    const thumb = m.imageUrl
+      ? `<img src="${m.imageUrl}" alt="" loading="lazy" onerror="this.outerHTML='<span>${m.emoji||'🍽'}</span>'">`
+      : `<span>${m.emoji||'🍽'}</span>`;
+    return `<div class="order-item">
+      <div class="oi-thumb">${thumb}</div>
+      <div class="oi-info"><div class="oi-name">${m.name}</div><div class="oi-price">${rp(m.price)}</div></div>
+      <div class="oi-qty">
+        <button class="qty-btn" onclick="changeQty('${id}',-1)">−</button>
+        <span class="qty-num">${qty}</span>
+        <button class="qty-btn" onclick="changeQty('${id}',1)">+</button>
+      </div>
+      <div class="oi-subtotal">${rp(m.price*qty)}</div>
+    </div>`;
+  }).join('');
+}
+
+function changeQty(id, d) {
+  cart[id] = Math.max(0,(cart[id]||0)+d);
+  if (cart[id]===0) delete cart[id];
+  updateCartBadge(); renderOrderItems(); renderSummary();
+}
+
+function renderCustomers() {
+  const el = document.getElementById('customerList');
+  el.innerHTML = customers.map((c,i) => `
+    <div class="customer-row">
+      <input class="form-input" placeholder="Nama ${i+1}" value="${c}" oninput="customers[${i}]=this.value">
+      ${customers.length>1?`<button class="remove-cust" onclick="removeCustomer(${i})">✕</button>`:''}
+    </div>`).join('');
+}
+
+function addCustomer() { customers.push(''); renderCustomers(); }
+function removeCustomer(i) { customers.splice(i,1); renderCustomers(); }
+
+function renderSummary() {
+  const sub = cartTotal();
+  const svc = Math.round(sub*((settings.serviceCharge||0)/100));
+  const tax = Math.round((sub+svc)*((settings.taxRate||0)/100));
+  const total = sub+svc+tax;
+  document.getElementById('orderSummary').innerHTML = `
+    <div class="summary-row"><span class="summary-label">Subtotal</span><span class="summary-val">${rp(sub)}</span></div>
+    ${settings.serviceCharge>0?`<div class="summary-row"><span class="summary-label">Service (${settings.serviceCharge}%)</span><span class="summary-val">${rp(svc)}</span></div>`:''}
+    ${settings.taxRate>0?`<div class="summary-row"><span class="summary-label">Pajak (${settings.taxRate}%)</span><span class="summary-val">${rp(tax)}</span></div>`:''}
+    <div class="summary-total"><span class="summary-total-label">Total</span><span class="summary-total-val">${rp(total)}</span></div>`;
+}
+
+async function submitOrder() {
+  if (!cartCount()) { toast('Pilih menu terlebih dahulu!'); return; }
+  const table = document.getElementById('tableNum').value;
+  if (!table) { toast('Pilih nomor meja!'); return; }
+  const names = customers.filter(c => c.trim());
+  if (!names.length) { toast('Masukkan minimal 1 nama pelanggan!'); return; }
+
+  const sub = cartTotal();
+  const svc = Math.round(sub*((settings.serviceCharge||0)/100));
+  const tax = Math.round((sub+svc)*((settings.taxRate||0)/100));
+
+  const items = Object.entries(cart).filter(([,q]) => q > 0).map(([id,qty]) => {
+    const m = findMenu(id);
+    return { menuId: menuId(m), name:m.name, emoji:m.emoji, price:m.price, quantity:qty, subtotal:m.price*qty };
+  });
+
+  const btn = document.getElementById('confirmBtn');
+  btn.disabled = true; btn.textContent = 'Memproses...';
+
+  try {
+    const res = await apiPost('/orders', {
+      items, customers:names, table,
+      paymentMethod: document.getElementById('payMethod').value,
+      note: document.getElementById('orderNote').value,
+    });
+    if (!res.success) { toast('Gagal: ' + res.message); return; }
+    lastOrder = res.data;
+    cart = {}; customers = [''];
+    updateCartBadge();
+    renderReceiptPage();
+    showPage('receipt');
+    toast('✓ Pesanan berhasil dikonfirmasi!', 3000);
+  } catch { toast('Gagal terhubung ke server', 3000); }
+  finally { btn.disabled = false; btn.textContent = 'Konfirmasi Pesanan'; }
+}
+
+// ===== RECEIPT =====
+function renderReceiptPage() {
+  if (!lastOrder) return;
+  const o = lastOrder;
+  const parts = (settings.cafeName||'Fiah Corner').split(' ');
+  const itemsHTML = o.items.map(it =>
+    `<div class="receipt-row"><span>${it.emoji||''} ${it.name} x${it.quantity}</span><span>${rp(it.subtotal)}</span></div>`
+  ).join('');
+  const custsHTML = o.customers.map(c => `<div class="receipt-cust">${c}</div>`).join('');
+  const dt = new Date(o.createdAt||Date.now());
+
+  document.getElementById('receiptContent').innerHTML = `
+  <div class="receipt-wrap"><div>
+    <div class="receipt">
+      <div class="receipt-header">
+        <div class="receipt-logo">${parts[0]} <em>${parts.slice(1).join(' ')}</em></div>
+        <div class="receipt-tagline">${settings.tagline||''}</div>
+      </div>
+      <div class="receipt-body">
+        <div class="receipt-row"><span>No. Pesanan</span><span><strong>${o.orderNumber}</strong></span></div>
+        <div class="receipt-row"><span>Tanggal</span><span>${dt.toLocaleDateString('id-ID',{day:'2-digit',month:'long',year:'numeric'})}</span></div>
+        <div class="receipt-row"><span>Waktu</span><span>${dt.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})}</span></div>
+        <div class="receipt-row"><span>Meja</span><span>${o.table}</span></div>
+        <div class="receipt-row"><span>Pembayaran</span><span>${o.paymentMethod}</span></div>
+        <hr class="receipt-divider">
+        <div class="receipt-customers"><div class="receipt-cust-title">Atas Nama</div>${custsHTML}</div>
+        <hr class="receipt-divider">
+        ${itemsHTML}
+        <hr class="receipt-divider">
+        ${o.serviceCharge>0?`<div class="receipt-row"><span>Service</span><span>${rp(o.serviceCharge)}</span></div>`:''}
+        ${o.tax>0?`<div class="receipt-row"><span>Pajak</span><span>${rp(o.tax)}</span></div>`:''}
+        <div class="receipt-row total"><span>TOTAL</span><span>${rp(o.total)}</span></div>
+        ${o.note?`<hr class="receipt-divider"><div style="font-size:12px;color:var(--text-soft);">📝 ${o.note}</div>`:''}
+      </div>
+      <div class="receipt-footer">
+        <div>${settings.address||''}</div>
+        <div style="margin-top:6px;"><strong>Terima kasih telah mengunjungi ${settings.cafeName||'Fiah Corner'}!</strong></div>
+        <div style="margin-top:2px;">Semoga harimu menyenangkan ✦</div>
+      </div>
+    </div>
+    <div class="receipt-actions no-print">
+      <button class="btn btn-primary" onclick="window.print()">🖨 Cetak Struk</button>
+      <button class="btn btn-outline" onclick="showPage('menu')">+ Pesanan Baru</button>
+    </div>
+  </div></div>`;
+}
+
+// ===== ADMIN =====
+async function loadStats() {
+  try {
+    const res = await apiGet('/orders/stats/today');
+    if (res.success) {
+      const { count, revenue } = res.data;
+      document.getElementById('statOrders').textContent = count;
+      document.getElementById('statRev').textContent = revenue > 0 ? 'Rp ' + Math.round(revenue/1000) + 'rb' : '—';
+    }
+  } catch {}
+}
+
+function renderAdmin() {
+  document.getElementById('statMenu').textContent = menuItems.filter(m => m.available).length;
+  document.getElementById('statCat').textContent = new Set(menuItems.map(m => m.category)).size;
+
+  const list = document.getElementById('adminMenuList');
+  if (!menuItems.length) {
+    list.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">🍽</div><div class="empty-text">Belum ada menu</div></div>`;
+    return;
+  }
+  list.innerHTML = menuItems.map(m => {
+    const id = menuId(m);
+    const thumb = m.imageUrl
+      ? `<img src="${m.imageUrl}" alt="" loading="lazy" onerror="this.style.display='none'">`
+      : `<span>${m.emoji||'🍽'}</span>`;
+    return `<div class="admin-menu-item">
+      <div class="ami-thumb">${thumb}</div>
+      <div class="ami-info">
+        <div class="ami-name">${m.name}</div>
+        <div class="ami-cat">${m.category}</div>
+        <div class="ami-price-edit">
+          <input class="price-input" type="number" value="${m.price}" id="price_${id}">
+          <button class="btn btn-sm btn-primary" onclick="updatePrice('${id}')">✓</button>
+        </div>
+      </div>
+      <div class="ami-actions" style="flex-direction:column;gap:6px;">
+        <button class="toggle-avail ${m.available?'on':'off'}" onclick="toggleAvail('${id}')">${m.available?'Aktif':'Nonaktif'}</button>
+        <button class="btn btn-sm btn-outline" onclick="openEdit('${id}')">✏ Edit</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteItem('${id}')">🗑</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function updatePrice(id) {
+  const val = document.getElementById('price_' + id)?.value;
+  const m = findMenu(id);
+  if (!m) return;
+  const res = await apiPatch('/menu/' + id, { price: parseInt(val)||0 });
+  if (res.success) { m.price = res.data.price; toast(`Harga ${m.name}: ${rp(m.price)}`); }
+  else toast('Gagal: ' + res.message);
+}
+
+async function toggleAvail(id) {
+  const res = await apiPatch('/menu/' + id + '/availability');
+  if (res.success) {
+    const m = findMenu(id);
+    if (m) m.available = res.data.available;
+    renderAdmin();
+    toast(`${res.data.name}: ${res.data.available?'Aktif':'Nonaktif'}`);
+  } else toast('Gagal: ' + res.message);
+}
+
+async function deleteItem(id) {
+  if (!confirm('Hapus menu ini?')) return;
+  const res = await apiDelete('/menu/' + id);
+  if (res.success) {
+    menuItems = menuItems.filter(m => menuId(m) !== id);
+    delete cart[id];
+    updateCartBadge(); renderAdmin();
+    toast('Menu dihapus');
+  } else toast('Gagal: ' + res.message);
+}
+
+// ===== IMAGE UPLOAD =====
+function handleImgUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  newImageFile = file;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const prev = document.getElementById('imgPreview');
+    prev.src = ev.target.result; prev.style.display = 'block';
+    document.getElementById('uploadPlaceholder').style.display = 'none';
+    document.getElementById('uploadArea').classList.add('has-img');
+  };
+  reader.readAsDataURL(file);
+}
+
+async function addMenuItem() {
+  const name = document.getElementById('newName').value.trim();
+  const cat = document.getElementById('newCat').value.trim();
+  const price = parseInt(document.getElementById('newPrice').value)||0;
+  if (!name||!cat||!price) { toast('Lengkapi nama, kategori & harga!'); return; }
+
+  const fd = new FormData();
+  fd.append('name', name);
+  fd.append('category', cat);
+  fd.append('price', price);
+  fd.append('description', document.getElementById('newDesc').value||'');
+  fd.append('emoji', document.getElementById('newEmoji').value||'🍽');
+  if (newImageFile) fd.append('image', newImageFile);
+
+  const btn = document.getElementById('addMenuBtn');
+  btn.disabled = true; btn.textContent = 'Menyimpan...';
+
+  const res = await apiUpload('/menu', fd);
+  btn.disabled = false; btn.textContent = '+ Tambah Menu';
+
+  if (res.success) {
+    menuItems.push(res.data);
+    clearAddForm(); renderAdmin();
+    toast(`✓ ${res.data.name} berhasil ditambahkan!`);
+  } else toast('Gagal: ' + (res.message||'Error'));
+}
+
+function clearAddForm() {
+  ['newName','newCat','newPrice','newDesc','newEmoji'].forEach(id => document.getElementById(id).value = '');
+  newImageFile = null;
+  const prev = document.getElementById('imgPreview');
+  prev.src = ''; prev.style.display = 'none';
+  document.getElementById('uploadPlaceholder').style.display = 'block';
+  document.getElementById('uploadArea').classList.remove('has-img');
+  document.getElementById('imgInput').value = '';
+}
+
+// ===== EDIT MODAL =====
+function openEdit(id) {
+  const m = findMenu(id);
+  if (!m) return;
+  editingId = id; editImageFile = null;
+  document.getElementById('editId').value = id;
+  document.getElementById('editName').value = m.name;
+  document.getElementById('editCatInput').value = m.category;
+  document.getElementById('editPrice').value = m.price;
+  document.getElementById('editEmoji').value = m.emoji||'';
+  document.getElementById('editDesc').value = m.description||'';
+  const prev = document.getElementById('editImgPreview');
+  if (m.imageUrl) {
+    prev.src = m.imageUrl; prev.style.display = 'block';
+    document.getElementById('editUploadPlaceholder').style.display = 'none';
+  } else {
+    prev.style.display = 'none';
+    document.getElementById('editUploadPlaceholder').style.display = 'block';
+  }
+  document.getElementById('editModal').classList.add('open');
+}
+
+function closeEditModal() {
+  document.getElementById('editModal').classList.remove('open');
+  document.getElementById('editImgInput').value = '';
+  editingId = null; editImageFile = null;
+}
+
+function handleEditImgUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  editImageFile = file;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const prev = document.getElementById('editImgPreview');
+    prev.src = ev.target.result; prev.style.display = 'block';
+    document.getElementById('editUploadPlaceholder').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+async function saveEdit() {
+  const id = document.getElementById('editId').value;
+  const fd = new FormData();
+  fd.append('name', document.getElementById('editName').value.trim());
+  fd.append('category', document.getElementById('editCatInput').value.trim());
+  fd.append('price', parseInt(document.getElementById('editPrice').value)||0);
+  fd.append('emoji', document.getElementById('editEmoji').value);
+  fd.append('description', document.getElementById('editDesc').value);
+  if (editImageFile) fd.append('image', editImageFile);
+
+  const btn = document.getElementById('saveEditBtn');
+  btn.disabled = true; btn.textContent = 'Menyimpan...';
+
+  const res = await apiUpload('/menu/' + id, fd, 'PUT');
+  btn.disabled = false; btn.textContent = 'Simpan Perubahan';
+
+  if (res.success) {
+    const idx = menuItems.findIndex(m => menuId(m) === id);
+    if (idx >= 0) menuItems[idx] = res.data;
+    closeEditModal(); renderAdmin();
+    toast(`✓ ${res.data.name} diperbarui!`);
+  } else toast('Gagal: ' + (res.message||'Error'));
+}
+
+// ===== SETTINGS =====
+async function saveSetting(key, val) {
+  const res = await apiPut('/settings', { [key]: val });
+  if (res.success) {
+    settings = { ...settings, ...res.data };
+    applySettingsToDOM();
+    toast('Pengaturan disimpan ✓');
+  } else toast('Gagal: ' + res.message);
+}
+
+// ===== INIT =====
+async function init() {
+  updateAdminUI();
+  try { await Promise.all([loadSettings(), loadMenu()]); } catch {}
+  renderMenu();
+  renderCustomers();
+  renderSummary();
+}
+
+init();
+</script>
+</body>
+</html>
