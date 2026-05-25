@@ -26,17 +26,20 @@ const allowedOrigins = (process.env.ALLOWED_ORIGINS || '')
   .map((o) => o.trim())
   .filter(Boolean);
 
+// Block origin only when running locally AND a whitelist is explicitly configured
+const useWhitelist =
+  !process.env.VERCEL &&
+  process.env.NODE_ENV !== 'production' &&
+  allowedOrigins.length > 0;
+
 app.use(
   cors({
-    origin:
-      process.env.NODE_ENV === 'production' || process.env.VERCEL
-        ? true
-        : (origin, cb) => {
-            if (!origin || allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
-              return cb(null, true);
-            }
-            cb(new Error(`CORS: Origin "${origin}" tidak diizinkan`));
-          },
+    origin: useWhitelist
+      ? (origin, cb) => {
+          if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
+          cb(new Error(`CORS: Origin "${origin}" tidak diizinkan`));
+        }
+      : true,
     credentials: true,
   })
 );

@@ -137,19 +137,22 @@ html,body{height:100%;font-family:'Jost',sans-serif;background:var(--cream);colo
 .receipt-footer strong{color:var(--rose-deep);font-family:'Cormorant Garamond',serif;font-size:14px;}
 .receipt-actions{display:flex;gap:12px;margin-top:20px;justify-content:center;}
 .admin-section{margin-bottom:32px;}
-.admin-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;}
-.admin-menu-item{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:16px;display:flex;align-items:center;gap:14px;transition:all .2s;}
+.admin-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;}
+.admin-menu-item{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;display:flex;align-items:flex-start;gap:12px;transition:all .2s;}
 .admin-menu-item:hover{border-color:var(--rose-light);box-shadow:var(--shadow);}
-.ami-thumb{width:56px;height:56px;border-radius:10px;background:var(--cream2);display:flex;align-items:center;justify-content:center;font-size:30px;overflow:hidden;flex-shrink:0;}
+.ami-thumb{width:52px;height:52px;border-radius:10px;background:var(--cream2);display:flex;align-items:center;justify-content:center;font-size:26px;overflow:hidden;flex-shrink:0;}
 .ami-thumb img{width:100%;height:100%;object-fit:cover;}
-.ami-info{flex:1;}
-.ami-name{font-weight:600;font-size:14px;color:var(--text);margin-bottom:2px;}
-.ami-cat{font-size:11px;color:var(--text-soft);}
-.ami-price-edit{display:flex;align-items:center;gap:6px;margin-top:6px;}
-.price-input{width:110px;padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;color:var(--text);font-family:'Jost',sans-serif;}
+.ami-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px;}
+.ami-header{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
+.ami-header-left{min-width:0;flex:1;}
+.ami-name{font-weight:600;font-size:14px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ami-meta{font-size:12px;color:var(--text-soft);margin-top:2px;}
+.ami-footer{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;}
+.ami-price-wrap{display:flex;align-items:center;gap:6px;}
+.price-input{width:100px;padding:5px 8px;border:1px solid var(--border);border-radius:6px;font-size:13px;color:var(--text);font-family:'Jost',sans-serif;}
 .price-input:focus{border-color:var(--rose);outline:none;}
-.ami-actions{display:flex;gap:6px;flex-shrink:0;}
-.toggle-avail{padding:5px 12px;border-radius:14px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid;font-family:'Jost',sans-serif;transition:all .2s;}
+.ami-btns{display:flex;align-items:center;gap:6px;}
+.toggle-avail{padding:4px 10px;border-radius:14px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid;font-family:'Jost',sans-serif;transition:all .2s;white-space:nowrap;}
 .toggle-avail.on{background:#e8f5e9;color:#2e7d32;border-color:#a5d6a7;}
 .toggle-avail.off{background:#fce4ec;color:#c62828;border-color:#f48fb1;}
 .add-menu-form{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:24px;}
@@ -189,7 +192,54 @@ html,body{height:100%;font-family:'Jost',sans-serif;background:var(--cream);colo
 ::-webkit-scrollbar{width:6px;height:6px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
-@media(max-width:768px){.order-layout{grid-template-columns:1fr;}.stat-grid{grid-template-columns:repeat(2,1fr);}.form-row{grid-template-columns:1fr;}.receipt{width:100%;}}
+/* ─── Tablet ──────────────────────────────────────────────────────────────── */
+@media(max-width:900px){
+  .stat-grid{grid-template-columns:repeat(2,1fr);}
+  .admin-grid{grid-template-columns:repeat(auto-fill,minmax(260px,1fr));}
+}
+/* ─── Mobile ─────────────────────────────────────────────────────────────── */
+@media(max-width:768px){
+  .app{height:auto;min-height:100vh;}
+  .main{overflow:visible;}
+  .page{overflow-y:visible;padding:16px 14px;}
+  .header{padding:0 14px;height:56px;}
+  .logo{font-size:21px;}
+  .nav{padding:0 8px;overflow-x:auto;scrollbar-width:none;}
+  .nav::-webkit-scrollbar{display:none;}
+  .nav-item{padding:12px 14px;font-size:12px;}
+  .order-layout{grid-template-columns:1fr;}
+  .stat-grid{grid-template-columns:repeat(2,1fr);gap:10px;}
+  .form-row{grid-template-columns:1fr;}
+  .receipt{width:100%;max-width:420px;}
+  .sec-title{font-size:22px;}
+  .admin-grid{grid-template-columns:1fr;}
+  .settings-row{flex-direction:column;align-items:flex-start;gap:10px;}
+  .settings-ctrl{width:100%;}
+  .settings-ctrl .form-input{flex:1;width:auto!important;}
+  .ami-footer{flex-direction:column;align-items:flex-start;}
+  .ami-btns{width:100%;justify-content:flex-end;}
+  .add-menu-form{padding:16px;}
+  .panel{padding:16px;}
+  .header-right{gap:8px;}
+}
+/* ─── Small Mobile ───────────────────────────────────────────────────────── */
+@media(max-width:480px){
+  .header{height:52px;}
+  .logo{font-size:19px;}
+  .page{padding:12px 10px;}
+  .stat-grid{gap:8px;}
+  .stat-card{padding:14px 16px;}
+  .stat-val{font-size:24px;}
+  .menu-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;}
+  .card-img{height:120px;}
+  .cart-pill{padding:8px 12px;}
+  .cart-pill .cart-text{display:none;}
+  .admin-btn{padding:8px 12px;font-size:12px;}
+  .sec-title{font-size:20px;}
+  .btn-lg{padding:12px 24px;font-size:14px;}
+  .price-input{width:90px;}
+  .ami-thumb{width:46px;height:46px;font-size:22px;}
+}
 @media print{.no-print{display:none!important;}body{background:white;}.receipt{box-shadow:none;border:1px solid #ddd;}}
 </style>
 </head>
@@ -202,7 +252,7 @@ html,body{height:100%;font-family:'Jost',sans-serif;background:var(--cream);colo
     <div class="admin-badge" id="adminBadge">⚙ Admin <button onclick="logout()" style="background:none;border:none;cursor:pointer;font-size:11px;color:var(--text-soft);padding:0;">Logout</button></div>
     <button class="admin-btn" onclick="goAdmin()">⚙ Admin</button>
     <button class="cart-pill" onclick="showPage('order')">
-      🛒 Keranjang
+      🛒 <span class="cart-text">Keranjang</span>
       <div class="cart-count" id="cartCount">0</div>
     </button>
   </div>
@@ -856,17 +906,23 @@ function renderAdmin() {
     return `<div class="admin-menu-item">
       <div class="ami-thumb">${thumb}</div>
       <div class="ami-info">
-        <div class="ami-name">${m.name}</div>
-        <div class="ami-cat">${m.category}</div>
-        <div class="ami-price-edit">
-          <input class="price-input" type="number" value="${m.price}" id="price_${id}">
-          <button class="btn btn-sm btn-primary" onclick="updatePrice('${id}')">✓</button>
+        <div class="ami-header">
+          <div class="ami-header-left">
+            <div class="ami-name">${m.name}</div>
+            <div class="ami-meta">${m.category} &middot; ${rp(m.price)}</div>
+          </div>
+          <button class="toggle-avail ${m.available?'on':'off'}" onclick="toggleAvail('${id}')">${m.available?'Aktif':'Nonaktif'}</button>
         </div>
-      </div>
-      <div class="ami-actions" style="flex-direction:column;gap:6px;">
-        <button class="toggle-avail ${m.available?'on':'off'}" onclick="toggleAvail('${id}')">${m.available?'Aktif':'Nonaktif'}</button>
-        <button class="btn btn-sm btn-outline" onclick="openEdit('${id}')">✏ Edit</button>
-        <button class="btn btn-sm btn-danger" onclick="deleteItem('${id}')">🗑</button>
+        <div class="ami-footer">
+          <div class="ami-price-wrap">
+            <input class="price-input" type="number" value="${m.price}" id="price_${id}" placeholder="Harga">
+            <button class="btn btn-sm btn-primary" onclick="updatePrice('${id}')">✓</button>
+          </div>
+          <div class="ami-btns">
+            <button class="btn btn-sm btn-outline" onclick="openEdit('${id}')">✏ Edit</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteItem('${id}')">🗑</button>
+          </div>
+        </div>
       </div>
     </div>`;
   }).join('');
