@@ -29,6 +29,8 @@ const adminSchema = new mongoose.Schema(
       default: 'admin',
     },
     lastLogin: Date,
+    resetPasswordToken: { type: String, select: false },
+    resetPasswordExpires: { type: Date, select: false },
   },
   { timestamps: true }
 );

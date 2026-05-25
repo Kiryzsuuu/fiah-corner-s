@@ -450,22 +450,57 @@ html,body{height:100%;font-family:'Jost',sans-serif;background:var(--cream);colo
 
   <div class="admin-section">
     <div class="panel">
-      <div class="panel-title">Pengaturan Akun</div>
+      <div class="panel-title">Profil Saya</div>
+
+      <!-- Info profil -->
       <div class="settings-row">
         <div class="settings-info">
-          <div class="settings-name" id="acctName">—</div>
-          <div class="settings-desc" id="acctEmail">—</div>
+          <div class="settings-name">Informasi Akun</div>
+          <div class="settings-desc">Username, email, dan role kamu</div>
         </div>
         <div class="settings-ctrl">
           <span id="acctRole" style="font-size:12px;padding:3px 10px;border-radius:12px;background:var(--rose-pale);color:var(--rose-deep);font-weight:600;"></span>
         </div>
       </div>
-      <div class="settings-row" style="border-bottom:none;">
-        <div class="settings-info">
-          <div class="settings-name">Logout</div>
-          <div class="settings-desc">Keluar dari sesi admin</div>
+
+      <!-- Edit username & email -->
+      <div style="padding:16px 0;border-bottom:1px solid var(--border);">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Username</label>
+            <input class="form-input" id="profileUser" placeholder="username">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input class="form-input" id="profileEmail" type="email" placeholder="email@domain.com">
+          </div>
         </div>
-        <div class="settings-ctrl">
+        <button class="btn btn-sm btn-primary" id="saveProfileBtn" onclick="saveProfile()">Simpan Perubahan</button>
+      </div>
+
+      <!-- Ganti password -->
+      <div style="padding:16px 0;border-bottom:1px solid var(--border);">
+        <div style="font-size:13px;font-weight:600;color:var(--text-mid);letter-spacing:.5px;text-transform:uppercase;margin-bottom:14px;">Ganti Password</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Password Saat Ini</label>
+            <input class="form-input" id="curPass" type="password" placeholder="••••••">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password Baru</label>
+            <input class="form-input" id="newPass" type="password" placeholder="min. 6 karakter">
+          </div>
+        </div>
+        <button class="btn btn-sm btn-outline" id="savePassBtn" onclick="savePassword()">Update Password</button>
+      </div>
+
+      <!-- Logout -->
+      <div style="padding:16px 0 0;">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+          <div>
+            <div style="font-size:14px;font-weight:500;color:var(--text);">Keluar dari Sesi</div>
+            <div style="font-size:12px;color:var(--text-soft);margin-top:2px;">Pastikan semua perubahan sudah disimpan</div>
+          </div>
           <button class="btn btn-sm btn-danger" onclick="confirmLogout()">Logout</button>
         </div>
       </div>
@@ -529,10 +564,92 @@ html,body{height:100%;font-family:'Jost',sans-serif;background:var(--cream);colo
         <input class="form-input" id="loginPass" type="password" placeholder="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
       </div>
       <div class="login-error" id="loginError"></div>
+      <div style="margin-top:14px;display:flex;justify-content:space-between;font-size:12px;">
+        <button onclick="openForgotModal()" style="background:none;border:none;color:var(--rose);cursor:pointer;padding:0;font-family:'Jost',sans-serif;font-size:12px;">Lupa password?</button>
+        <button onclick="openRegisterModal()" style="background:none;border:none;color:var(--text-soft);cursor:pointer;padding:0;font-family:'Jost',sans-serif;font-size:12px;">Belum punya akun? <span style="color:var(--rose);">Daftar</span></button>
+      </div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-outline" onclick="closeLoginModal()">Batal</button>
       <button id="loginBtn" class="btn btn-primary" onclick="doLogin()">Login</button>
+    </div>
+  </div>
+</div>
+
+<!-- REGISTER MODAL -->
+<div class="modal-bg" id="registerModal">
+  <div class="modal" style="max-width:400px;">
+    <div class="modal-header">
+      <div class="modal-title">Daftar Akun</div>
+      <button class="modal-close" onclick="closeRegisterModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group" style="margin-bottom:12px;">
+        <label class="form-label">Username</label>
+        <input class="form-input" id="regUser" placeholder="min. 3 karakter, huruf & angka" autocomplete="username">
+      </div>
+      <div class="form-group" style="margin-bottom:12px;">
+        <label class="form-label">Email</label>
+        <input class="form-input" id="regEmail" type="email" placeholder="email@domain.com">
+      </div>
+      <div class="form-group" style="margin-bottom:4px;">
+        <label class="form-label">Password</label>
+        <input class="form-input" id="regPass" type="password" placeholder="min. 6 karakter" onkeydown="if(event.key==='Enter')doRegister()">
+      </div>
+      <p style="font-size:12px;color:var(--text-soft);margin-top:8px;line-height:1.6;">Akun baru akan mendapatkan role <strong>Kasir</strong>. Hubungi superadmin untuk mengubah akses.</p>
+      <div class="login-error" id="regError"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeRegisterModal()">Batal</button>
+      <button id="regBtn" class="btn btn-primary" onclick="doRegister()">Daftar</button>
+    </div>
+  </div>
+</div>
+
+<!-- FORGOT PASSWORD MODAL -->
+<div class="modal-bg" id="forgotModal">
+  <div class="modal" style="max-width:380px;">
+    <div class="modal-header">
+      <div class="modal-title">Lupa Password</div>
+      <button class="modal-close" onclick="closeForgotModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:14px;color:var(--text-mid);line-height:1.6;margin-bottom:16px;">Masukkan email yang terdaftar. Kami akan mengirim link untuk mereset password kamu.</p>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-input" id="forgotEmail" type="email" placeholder="email@domain.com" onkeydown="if(event.key==='Enter')doForgotPassword()">
+      </div>
+      <div class="login-error" id="forgotError"></div>
+      <div id="forgotSuccess" style="display:none;margin-top:10px;padding:10px 14px;background:#e8f5e9;border-radius:8px;font-size:13px;color:#2e7d32;line-height:1.6;"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeForgotModal()">Tutup</button>
+      <button id="forgotBtn" class="btn btn-primary" onclick="doForgotPassword()">Kirim Link</button>
+    </div>
+  </div>
+</div>
+
+<!-- RESET PASSWORD MODAL -->
+<div class="modal-bg" id="resetModal">
+  <div class="modal" style="max-width:380px;">
+    <div class="modal-header">
+      <div class="modal-title">Reset Password</div>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:14px;color:var(--text-mid);line-height:1.6;margin-bottom:16px;">Masukkan password baru untuk akunmu.</p>
+      <div class="form-group" style="margin-bottom:12px;">
+        <label class="form-label">Password Baru</label>
+        <input class="form-input" id="resetPass" type="password" placeholder="min. 6 karakter">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Konfirmasi Password</label>
+        <input class="form-input" id="resetPassConfirm" type="password" placeholder="ulangi password baru" onkeydown="if(event.key==='Enter')doResetPassword()">
+      </div>
+      <div class="login-error" id="resetError"></div>
+      <div id="resetSuccess" style="display:none;margin-top:10px;padding:10px 14px;background:#e8f5e9;border-radius:8px;font-size:13px;color:#2e7d32;"></div>
+    </div>
+    <div class="modal-footer">
+      <button id="resetBtn" class="btn btn-primary btn-block" onclick="doResetPassword()">Simpan Password Baru</button>
     </div>
   </div>
 </div>
@@ -1303,14 +1420,150 @@ async function deleteAdminUser(id, username) {
   });
 }
 
-// ===== ACCOUNT =====
+// ===== REGISTER =====
+function openRegisterModal() {
+  closeLoginModal();
+  document.getElementById('regError').style.display = 'none';
+  ['regUser','regEmail','regPass'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('registerModal').classList.add('open');
+  setTimeout(() => document.getElementById('regUser').focus(), 100);
+}
+function closeRegisterModal() {
+  document.getElementById('registerModal').classList.remove('open');
+}
+async function doRegister() {
+  const username = document.getElementById('regUser').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const password = document.getElementById('regPass').value;
+  const errEl = document.getElementById('regError');
+  const btn = document.getElementById('regBtn');
+  errEl.style.display = 'none';
+  if (!username || !email || !password) {
+    errEl.textContent = 'Semua field wajib diisi'; errEl.style.display = 'block'; return;
+  }
+  btn.disabled = true; btn.textContent = 'Mendaftar...';
+  try {
+    const res = await apiPost('/auth/register', { username, email, password });
+    if (!res.success) { errEl.textContent = res.message; errEl.style.display = 'block'; return; }
+    closeRegisterModal();
+    toast('✓ Akun berhasil dibuat! Silakan login.', 3500);
+    setTimeout(() => document.getElementById('loginModal').classList.add('open'), 400);
+  } catch { errEl.textContent = 'Tidak dapat terhubung ke server'; errEl.style.display = 'block'; }
+  finally { btn.disabled = false; btn.textContent = 'Daftar'; }
+}
+
+// ===== FORGOT & RESET PASSWORD =====
+function openForgotModal() {
+  closeLoginModal();
+  document.getElementById('forgotError').style.display = 'none';
+  document.getElementById('forgotSuccess').style.display = 'none';
+  document.getElementById('forgotEmail').value = '';
+  document.getElementById('forgotBtn').style.display = '';
+  document.getElementById('forgotModal').classList.add('open');
+  setTimeout(() => document.getElementById('forgotEmail').focus(), 100);
+}
+function closeForgotModal() {
+  document.getElementById('forgotModal').classList.remove('open');
+}
+async function doForgotPassword() {
+  const email = document.getElementById('forgotEmail').value.trim();
+  const errEl = document.getElementById('forgotError');
+  const sucEl = document.getElementById('forgotSuccess');
+  const btn = document.getElementById('forgotBtn');
+  errEl.style.display = 'none'; sucEl.style.display = 'none';
+  if (!email) { errEl.textContent = 'Email wajib diisi'; errEl.style.display = 'block'; return; }
+  btn.disabled = true; btn.textContent = 'Mengirim...';
+  try {
+    const res = await apiPost('/auth/forgot-password', { email });
+    sucEl.textContent = res.message || 'Link reset dikirim ke email kamu.';
+    sucEl.style.display = 'block';
+    btn.style.display = 'none';
+  } catch { errEl.textContent = 'Tidak dapat terhubung ke server'; errEl.style.display = 'block'; }
+  finally { btn.disabled = false; btn.textContent = 'Kirim Link'; }
+}
+
+let _resetToken = null;
+function openResetModal(token) {
+  _resetToken = token;
+  document.getElementById('resetError').style.display = 'none';
+  document.getElementById('resetSuccess').style.display = 'none';
+  document.getElementById('resetPass').value = '';
+  document.getElementById('resetPassConfirm').value = '';
+  document.getElementById('resetModal').classList.add('open');
+}
+async function doResetPassword() {
+  const password = document.getElementById('resetPass').value;
+  const confirm = document.getElementById('resetPassConfirm').value;
+  const errEl = document.getElementById('resetError');
+  const sucEl = document.getElementById('resetSuccess');
+  const btn = document.getElementById('resetBtn');
+  errEl.style.display = 'none';
+  if (!password || password.length < 6) { errEl.textContent = 'Password minimal 6 karakter'; errEl.style.display = 'block'; return; }
+  if (password !== confirm) { errEl.textContent = 'Konfirmasi password tidak cocok'; errEl.style.display = 'block'; return; }
+  btn.disabled = true; btn.textContent = 'Menyimpan...';
+  try {
+    const res = await apiPost('/auth/reset-password', { token: _resetToken, password });
+    if (!res.success) { errEl.textContent = res.message; errEl.style.display = 'block'; return; }
+    sucEl.textContent = '✓ Password berhasil direset! Silakan login.';
+    sucEl.style.display = 'block';
+    btn.style.display = 'none';
+    history.replaceState(null, '', '/');
+    setTimeout(() => {
+      document.getElementById('resetModal').classList.remove('open');
+      document.getElementById('loginModal').classList.add('open');
+    }, 2000);
+  } catch { errEl.textContent = 'Tidak dapat terhubung ke server'; errEl.style.display = 'block'; }
+  finally { btn.disabled = false; btn.textContent = 'Simpan Password Baru'; }
+}
+
+// ===== ACCOUNT / MY PROFILE =====
 function renderAccountInfo() {
   const info = adminInfo;
-  document.getElementById('acctName').textContent = info?.username || 'Admin';
-  document.getElementById('acctEmail').textContent = info?.email || '—';
-  const roleEl = document.getElementById('acctRole');
   const roleMap = { superadmin: 'Super Admin', admin: 'Admin', kasir: 'Kasir' };
-  roleEl.textContent = roleMap[info?.role] || info?.role || '—';
+  const roleEl = document.getElementById('acctRole');
+  if (roleEl) roleEl.textContent = roleMap[info?.role] || info?.role || '—';
+  const userEl = document.getElementById('profileUser');
+  const emailEl = document.getElementById('profileEmail');
+  if (userEl) userEl.value = info?.username || '';
+  if (emailEl) emailEl.value = info?.email || '';
+}
+
+async function saveProfile() {
+  const username = document.getElementById('profileUser').value.trim();
+  const email = document.getElementById('profileEmail').value.trim();
+  const btn = document.getElementById('saveProfileBtn');
+  if (!username && !email) { toast('Tidak ada perubahan'); return; }
+  btn.disabled = true; btn.textContent = 'Menyimpan...';
+  try {
+    const body = {};
+    if (username !== adminInfo?.username) body.username = username;
+    if (email !== adminInfo?.email) body.email = email;
+    if (!Object.keys(body).length) { toast('Tidak ada perubahan'); return; }
+    const res = await apiPut('/auth/me', body);
+    if (!res.success) { toast('Gagal: ' + res.message); return; }
+    adminInfo = { ...adminInfo, ...res.data };
+    localStorage.setItem('fc_admin_info', JSON.stringify(adminInfo));
+    renderAccountInfo();
+    toast('✓ Profil berhasil diperbarui');
+  } catch { toast('Tidak dapat terhubung ke server'); }
+  finally { btn.disabled = false; btn.textContent = 'Simpan Perubahan'; }
+}
+
+async function savePassword() {
+  const currentPassword = document.getElementById('curPass').value;
+  const newPassword = document.getElementById('newPass').value;
+  const btn = document.getElementById('savePassBtn');
+  if (!currentPassword || !newPassword) { toast('Isi semua field password!'); return; }
+  if (newPassword.length < 6) { toast('Password baru minimal 6 karakter'); return; }
+  btn.disabled = true; btn.textContent = 'Menyimpan...';
+  try {
+    const res = await apiPatch('/auth/password', { currentPassword, newPassword });
+    if (!res.success) { toast('Gagal: ' + res.message); return; }
+    document.getElementById('curPass').value = '';
+    document.getElementById('newPass').value = '';
+    toast('✓ Password berhasil diubah');
+  } catch { toast('Tidak dapat terhubung ke server'); }
+  finally { btn.disabled = false; btn.textContent = 'Update Password'; }
 }
 
 // ===== SETTINGS =====
@@ -1330,6 +1583,11 @@ async function init() {
   renderMenu();
   renderCustomers();
   renderSummary();
+
+  // Cek URL untuk token reset password
+  const params = new URLSearchParams(window.location.search);
+  const resetToken = params.get('reset');
+  if (resetToken) openResetModal(resetToken);
 }
 
 init();

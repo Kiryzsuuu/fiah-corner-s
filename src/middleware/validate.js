@@ -25,6 +25,31 @@ const schemas = {
     password: Joi.string().required().messages({ 'any.required': 'Password wajib diisi' }),
   }),
 
+  register: Joi.object({
+    username: Joi.string().alphanum().min(3).max(30).lowercase().trim().required()
+      .messages({ 'string.alphanum': 'Username hanya boleh huruf dan angka', 'string.min': 'Username minimal 3 karakter' }),
+    email: Joi.string().email().lowercase().trim().required(),
+    password: Joi.string().min(6).required()
+      .messages({ 'string.min': 'Password minimal 6 karakter' }),
+  }),
+
+  resetPassword: Joi.object({
+    token: Joi.string().required(),
+    password: Joi.string().min(6).required()
+      .messages({ 'string.min': 'Password minimal 6 karakter' }),
+  }),
+
+  updateMe: Joi.object({
+    username: Joi.string().alphanum().min(3).max(30).lowercase().trim(),
+    email: Joi.string().email().lowercase().trim(),
+  }).min(1),
+
+  changePassword: Joi.object({
+    currentPassword: Joi.string().required().messages({ 'any.required': 'Password saat ini wajib diisi' }),
+    newPassword: Joi.string().min(6).required()
+      .messages({ 'string.min': 'Password baru minimal 6 karakter' }),
+  }),
+
   menu: Joi.object({
     name: Joi.string().trim().max(100).required(),
     category: Joi.string().trim().required(),

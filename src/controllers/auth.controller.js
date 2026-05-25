@@ -1,6 +1,8 @@
+const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const Admin = require('../models/Admin');
-const { ok, unauthorized, badRequest } = require('../utils/response');
+const mailService = require('../services/mail.service');
+const { ok, created, unauthorized, badRequest, notFound } = require('../utils/response');
 
 function signToken(id) {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -29,19 +31,93 @@ exports.login = async (req, res) => {
   ok(res, 'Login berhasil', { token, admin: adminData });
 };
 
+exports.register = async (req, res) => {
+  const { username, email, password } = req.body;
+  const existing = await Admin.findOne({ $or: [{ username }, { email }] });
+  if (existing) return badRequest(res, 'Username atau email sudah digunakan');
+
+  const admin = await Admin.create({ username, email, password, role: 'kasir' });
+  const result = admin.toObject();
+  delete result.password;
+
+  created(res, 'Akun berhasil dibuat. Hubungi superadmin untuk mengaktifkan akses penuh.', result);
+};
+
+exports.forgotPassword = async (req, res) => {
+  const { email } = req.body;
+  const admin = await Admin.findOne({ email });
+
+  // Selalu kembalikan sukses agar tidak bocorkan info email terdaftar
+  if (!admin) return ok(res, 'Jika email terdaftar, link reset password akan dikirim.');
+
+  const rawToken = crypto.randomBytes(32).toString('hex');
+  admin.resetPasswordToken = crypto.createHash('sha256').update(rawToken).digest('hex');
+  admin.resetPasswordExpires = Date.now() + 60 * 60 * 1000; // 1 jam
+  await admin.save({ validateBeforeSave: false });
+
+  const origin = process.env.FRONTEND_URL || `${req.protocol}://${req.get('host')}`;
+  const resetUrl = `${origin}/?reset=${rawToken}`;
+
+  try {
+    await mailService.sendPasswordReset({ to: admin.email, name: admin.username, resetUrl });
+  } catch (err) {
+    admin.resetPasswordToken = undefined;
+    admin.resetPasswordExpires = undefined;
+    await admin.save({ validateBeforeSave: false });
+    return badRequest(res, 'Gagal mengirim email, coba lagi nanti');
+  }
+
+  ok(res, 'Jika email terdaftar, link reset password akan dikirim.');
+};
+
+exports.resetPassword = async (req, res) => {
+  const { token, password } = req.body;
+  const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+  const admin = await Admin.findOne({
+    resetPasswordToken: hashedToken,
+    resetPasswordExpires: { $gt: Date.now() },
+  }).select('+resetPasswordToken +resetPasswordExpires');
+
+  if (!admin) return badRequest(res, 'Token tidak valid atau sudah kedaluwarsa');
+
+  admin.password = password;
+  admin.resetPasswordToken = undefined;
+  admin.resetPasswordExpires = undefined;
+  await admin.save();
+
+  ok(res, 'Password berhasil direset. Silakan login.');
+};
+
 exports.me = async (req, res) => {
   ok(res, 'Data admin', req.admin);
 };
 
-exports.changePassword = async (req, res) => {
-  const { currentPassword, newPassword } = req.body;
-  if (!currentPassword || !newPassword) {
-    return badRequest(res, 'Password lama dan baru wajib diisi');
+exports.updateMe = async (req, res) => {
+  const { username, email } = req.body;
+  const admin = req.admin;
+
+  if (username && username !== admin.username) {
+    const exists = await Admin.findOne({ username, _id: { $ne: admin._id } });
+    if (exists) return badRequest(res, 'Username sudah digunakan');
+    admin.username = username;
+  }
+  if (email && email !== admin.email) {
+    const exists = await Admin.findOne({ email, _id: { $ne: admin._id } });
+    if (exists) return badRequest(res, 'Email sudah digunakan');
+    admin.email = email;
   }
 
+  await admin.save();
+  ok(res, 'Profil berhasil diperbarui', admin.toObject());
+};
+
+exports.changePassword = async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
   const admin = await Admin.findById(req.admin._id).select('+password');
+
   if (!(await admin.comparePassword(currentPassword))) {
-    return unauthorized(res, 'Password lama salah');
+    return unauthorized(res, 'Password saat ini salah');
   }
 
   admin.password = newPassword;
