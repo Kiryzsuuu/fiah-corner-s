@@ -515,6 +515,23 @@ html,body{height:100%;font-family:'Jost',sans-serif;background:var(--cream);colo
   </div>
 </div>
 
+<!-- GENERIC CONFIRM MODAL -->
+<div class="modal-bg" id="confirmModal">
+  <div class="modal" style="max-width:360px;">
+    <div class="modal-header">
+      <div class="modal-title" id="confirmTitle">Konfirmasi</div>
+      <button class="modal-close" onclick="closeConfirmModal()">✕</button>
+    </div>
+    <div class="modal-body" style="padding-bottom:8px;">
+      <p id="confirmMsg" style="font-size:14px;color:var(--text-mid);line-height:1.6;"></p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeConfirmModal()">Batal</button>
+      <button class="btn btn-danger" id="confirmOkBtn">Ya, Hapus</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script>
@@ -724,6 +741,18 @@ async function doLogin() {
 function closeLoginModal() {
   document.getElementById('loginModal').classList.remove('open');
   document.getElementById('loginError').style.display = 'none';
+}
+
+function showConfirm({ title = 'Konfirmasi', message, okLabel = 'Ya, Hapus', onOk }) {
+  document.getElementById('confirmTitle').textContent = title;
+  document.getElementById('confirmMsg').textContent = message;
+  const okBtn = document.getElementById('confirmOkBtn');
+  okBtn.textContent = okLabel;
+  okBtn.onclick = () => { closeConfirmModal(); onOk(); };
+  document.getElementById('confirmModal').classList.add('open');
+}
+function closeConfirmModal() {
+  document.getElementById('confirmModal').classList.remove('open');
 }
 
 function confirmLogout() {
@@ -1002,14 +1031,21 @@ async function toggleAvail(id) {
 }
 
 async function deleteItem(id) {
-  if (!confirm('Hapus menu ini?')) return;
-  const res = await apiDelete('/menu/' + id);
-  if (res.success) {
-    menuItems = menuItems.filter(m => menuId(m) !== id);
-    delete cart[id];
-    updateCartBadge(); renderAdmin();
-    toast('Menu dihapus');
-  } else toast('Gagal: ' + res.message);
+  const m = findMenu(id);
+  showConfirm({
+    title: 'Hapus Menu',
+    message: `Hapus "${m?.name || 'menu ini'}" dari daftar? Tindakan ini tidak dapat dibatalkan.`,
+    okLabel: 'Ya, Hapus',
+    onOk: async () => {
+      const res = await apiDelete('/menu/' + id);
+      if (res.success) {
+        menuItems = menuItems.filter(m => menuId(m) !== id);
+        delete cart[id];
+        updateCartBadge(); renderAdmin();
+        toast('Menu dihapus');
+      } else toast('Gagal: ' + res.message);
+    },
+  });
 }
 
 // ===== IMAGE UPLOAD =====
