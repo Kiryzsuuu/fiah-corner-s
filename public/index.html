@@ -192,6 +192,18 @@ html,body{height:100%;font-family:'Jost',sans-serif;background:var(--cream);colo
 ::-webkit-scrollbar{width:6px;height:6px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+.user-table{width:100%;border-collapse:collapse;}
+.user-table th{font-size:11px;font-weight:600;color:var(--text-soft);letter-spacing:.5px;text-transform:uppercase;padding:8px 12px;border-bottom:2px solid var(--border);text-align:left;background:var(--cream);}
+.user-table td{padding:12px;border-bottom:1px solid var(--border);font-size:13px;color:var(--text);vertical-align:middle;}
+.user-table tr:last-child td{border-bottom:none;}
+.user-table tr:hover td{background:var(--rose-pale);}
+.role-badge{display:inline-block;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600;}
+.role-badge.superadmin{background:#fce4ec;color:#c62828;}
+.role-badge.admin{background:#e3f2fd;color:#1565c0;}
+.role-badge.kasir{background:#e8f5e9;color:#2e7d32;}
+.role-select{padding:5px 8px;border:1px solid var(--border);border-radius:6px;font-size:13px;font-family:'Jost',sans-serif;color:var(--text);background:var(--white);cursor:pointer;}
+.role-select:focus{border-color:var(--rose);outline:none;}
+@media(max-width:600px){.user-table thead{display:none;}.user-table tr{display:block;border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:10px;}.user-table td{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);padding:10px 12px;}.user-table td:last-child{border-bottom:none;}.user-table td::before{content:attr(data-label);font-size:11px;font-weight:600;color:var(--text-soft);text-transform:uppercase;}}
 /* ─── Tablet ──────────────────────────────────────────────────────────────── */
 @media(max-width:900px){
   .stat-grid{grid-template-columns:repeat(2,1fr);}
@@ -409,6 +421,33 @@ html,body{height:100%;font-family:'Jost',sans-serif;background:var(--cream);colo
         <div class="settings-ctrl"><input class="form-input" id="setService" type="number" min="0" max="20" style="width:80px;"><button class="btn btn-sm btn-primary" onclick="saveSetting('serviceCharge',+document.getElementById('setService').value)">Simpan</button></div>
       </div>
     </div>
+  <div class="admin-section" id="userMgmtSection" style="display:none;">
+    <div class="panel-title" style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;margin-bottom:16px;">Manajemen Pengguna</div>
+
+    <!-- Form tambah akun -->
+    <div class="add-menu-form" style="margin-bottom:20px;">
+      <div style="font-size:13px;font-weight:600;color:var(--text-mid);letter-spacing:.5px;text-transform:uppercase;margin-bottom:14px;">Tambah Akun Baru</div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Username *</label><input class="form-input" id="newAdminUser" placeholder="username"></div>
+        <div class="form-group"><label class="form-label">Email *</label><input class="form-input" id="newAdminEmail" type="email" placeholder="email@domain.com"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Password *</label><input class="form-input" id="newAdminPass" type="password" placeholder="min. 6 karakter"></div>
+        <div class="form-group"><label class="form-label">Role</label>
+          <select class="form-select" id="newAdminRole">
+            <option value="kasir">Kasir</option>
+            <option value="admin">Admin</option>
+            <option value="superadmin">Super Admin</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn btn-primary" id="addAdminBtn" onclick="createAdminUser()">+ Tambah Akun</button>
+    </div>
+
+    <!-- Daftar pengguna -->
+    <div id="adminUserList"></div>
+  </div>
+
   <div class="admin-section">
     <div class="panel">
       <div class="panel-title">Pengaturan Akun</div>
@@ -674,6 +713,10 @@ function showPage(name) {
     loadStats();
     applySettingsToDOM();
     renderAccountInfo();
+    const isSuperadmin = adminInfo?.role === 'superadmin';
+    const userSection = document.getElementById('userMgmtSection');
+    if (userSection) userSection.style.display = isSuperadmin ? 'block' : 'none';
+    if (isSuperadmin) loadAdminUsers();
   }
 }
 
@@ -1163,6 +1206,101 @@ async function saveEdit() {
     closeEditModal(); renderAdmin();
     toast(`✓ ${res.data.name} diperbarui!`);
   } else toast('Gagal: ' + (res.message||'Error'));
+}
+
+// ===== USER MANAGEMENT =====
+let adminUsers = [];
+
+async function loadAdminUsers() {
+  try {
+    const res = await apiGet('/admins');
+    if (res.success) adminUsers = res.data || [];
+    renderAdminUsers();
+  } catch {}
+}
+
+function renderAdminUsers() {
+  const el = document.getElementById('adminUserList');
+  if (!el) return;
+  if (!adminUsers.length) {
+    el.innerHTML = `<div class="empty-state"><div class="empty-icon">👤</div><div class="empty-text">Belum ada pengguna</div></div>`;
+    return;
+  }
+  const roleMap = { superadmin: 'Super Admin', admin: 'Admin', kasir: 'Kasir' };
+  const rows = adminUsers.map(u => {
+    const isSelf = u._id === adminInfo?._id;
+    const roleOptions = ['superadmin','admin','kasir'].map(r =>
+      `<option value="${r}" ${u.role===r?'selected':''}>${roleMap[r]}</option>`
+    ).join('');
+    return `<tr>
+      <td data-label="Username"><strong>${u.username}</strong>${isSelf?' <span style="font-size:10px;color:var(--rose);">(kamu)</span>':''}</td>
+      <td data-label="Email">${u.email}</td>
+      <td data-label="Role"><span class="role-badge ${u.role}">${roleMap[u.role]}</span></td>
+      <td data-label="Ubah Role">
+        ${isSelf
+          ? `<span style="font-size:12px;color:var(--text-soft);">—</span>`
+          : `<div style="display:flex;gap:8px;align-items:center;">
+               <select class="role-select" id="role_${u._id}">${roleOptions}</select>
+               <button class="btn btn-sm btn-primary" onclick="saveRole('${u._id}')">Simpan</button>
+             </div>`}
+      </td>
+      <td data-label="Aksi">
+        ${isSelf
+          ? `<span style="font-size:12px;color:var(--text-soft);">—</span>`
+          : `<button class="btn btn-sm btn-danger" onclick="deleteAdminUser('${u._id}','${u.username}')">Hapus</button>`}
+      </td>
+    </tr>`;
+  }).join('');
+  el.innerHTML = `<table class="user-table">
+    <thead><tr><th>Username</th><th>Email</th><th>Role Saat Ini</th><th>Ubah Role</th><th>Aksi</th></tr></thead>
+    <tbody>${rows}</tbody>
+  </table>`;
+}
+
+async function saveRole(id) {
+  const role = document.getElementById('role_' + id)?.value;
+  const res = await apiPatch('/admins/' + id + '/role', { role });
+  if (res.success) {
+    const u = adminUsers.find(x => x._id === id);
+    if (u) u.role = res.data.role;
+    renderAdminUsers();
+    toast(`Role ${res.data.username} diperbarui`);
+  } else toast('Gagal: ' + res.message);
+}
+
+async function createAdminUser() {
+  const username = document.getElementById('newAdminUser').value.trim();
+  const email = document.getElementById('newAdminEmail').value.trim();
+  const password = document.getElementById('newAdminPass').value;
+  const role = document.getElementById('newAdminRole').value;
+  if (!username || !email || !password) { toast('Lengkapi semua field!'); return; }
+  const btn = document.getElementById('addAdminBtn');
+  btn.disabled = true; btn.textContent = 'Menyimpan...';
+  const res = await apiPost('/admins', { username, email, password, role });
+  btn.disabled = false; btn.textContent = '+ Tambah Akun';
+  if (res.success) {
+    adminUsers.push(res.data);
+    renderAdminUsers();
+    ['newAdminUser','newAdminEmail','newAdminPass'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('newAdminRole').value = 'kasir';
+    toast(`✓ Akun ${res.data.username} berhasil dibuat`);
+  } else toast('Gagal: ' + res.message);
+}
+
+async function deleteAdminUser(id, username) {
+  showConfirm({
+    title: 'Hapus Akun',
+    message: `Hapus akun "${username}"? Tindakan ini tidak dapat dibatalkan.`,
+    okLabel: 'Ya, Hapus',
+    onOk: async () => {
+      const res = await apiDelete('/admins/' + id);
+      if (res.success) {
+        adminUsers = adminUsers.filter(u => u._id !== id);
+        renderAdminUsers();
+        toast('Akun dihapus');
+      } else toast('Gagal: ' + res.message);
+    },
+  });
 }
 
 // ===== ACCOUNT =====

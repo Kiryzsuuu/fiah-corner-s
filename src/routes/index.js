@@ -5,6 +5,7 @@ router.use('/menu', require('./menu.routes'));
 router.use('/orders', require('./order.routes'));
 router.use('/settings', require('./setting.routes'));
 router.use('/notifications', require('./notification.routes'));
+router.use('/admins', require('./admin.routes'));
 
 router.get('/health', (req, res) => {
   res.json({

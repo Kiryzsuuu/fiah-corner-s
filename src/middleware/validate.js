@@ -109,6 +109,21 @@ const schemas = {
     recipientEmail: Joi.string().email().allow(''),
     recipientPhone: Joi.string().allow(''),
   }),
+
+  createAdmin: Joi.object({
+    username: Joi.string().alphanum().min(3).max(30).lowercase().trim().required()
+      .messages({ 'any.required': 'Username wajib diisi', 'string.alphanum': 'Username hanya boleh huruf dan angka' }),
+    email: Joi.string().email().lowercase().trim().required()
+      .messages({ 'any.required': 'Email wajib diisi' }),
+    password: Joi.string().min(6).required()
+      .messages({ 'any.required': 'Password wajib diisi', 'string.min': 'Password minimal 6 karakter' }),
+    role: Joi.string().valid('superadmin', 'admin', 'kasir').default('admin'),
+  }),
+
+  updateRole: Joi.object({
+    role: Joi.string().valid('superadmin', 'admin', 'kasir').required()
+      .messages({ 'any.required': 'Role wajib diisi' }),
+  }),
 };
 
 module.exports = { validate, schemas };
